@@ -1,14 +1,15 @@
-version: '3.9'
+version: '3.8'
 services:
 
   # Environment
-  afisha-db:
-    image: postgres
-    hostname: afisha-db
+  mysql:
+    image: mysql:8.0
     ports:
-      - 5432:5432
+      - 3306:3306
     environment:
-      POSTGRES_DB: userdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: afisha
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: admin
+
 
