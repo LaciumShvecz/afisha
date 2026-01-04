@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+
+  # Environment
+  afisha-db:
+    image: postgres
+    hostname: afisha-db
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: userdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
