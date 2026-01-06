@@ -25,17 +25,36 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                .httpBasic().and().authorizeRequests()
-                .antMatchers("/login").permitAll()
-                .antMatchers("api/admin/**").hasRole("ADMIN")
-                .antMatchers("api/user").hasAnyRole("ADMIN", "USER")
+                .authorizeRequests()
+                .antMatchers("/",
+                        "/index",
+                        "/concert",
+                        "/ticket",
+                        "/scripts/**",
+                        "/images/**",
+                        "/**/*.css",
+                        "/**/*.js",
+                        "/login",          // Добавляем страницу логина
+                        "/login-error",    // Добавляем страницу ошибки логина (опционально)
+                        "/register"
+                ).permitAll()
+                .antMatchers("/api/admin/**", "/admin-concerts", "/admin-dashboard").hasRole("ADMIN")
+                .antMatchers("/api/user").hasAnyRole("ADMIN", "USER")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().successHandler(successUserHandler)
+                .formLogin()
+                .loginPage("/login")              // Указываем кастомную страницу логина
+                .loginProcessingUrl("/login")     // URL для обработки формы логина
+                .successHandler(successUserHandler) // Ваш кастомный обработчик успешного логина
+                .failureUrl("/login?error=true")  // URL при ошибке логина
                 .permitAll()
-                .and().csrf().disable()
+                .and()
                 .logout()
-                .permitAll();
+                .logoutUrl("/logout")            // URL для выхода
+                .logoutSuccessUrl("/index")
+                .permitAll()
+                .and()
+                .csrf().disable();
     }
 
     @Bean

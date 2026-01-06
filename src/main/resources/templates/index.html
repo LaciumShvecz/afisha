@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>AFISHA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Твоя тема -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            height: 380px;
+            overflow: hidden;
+            border-radius: var(--bs-border-radius-lg);
+            margin-top: 1.5rem;
+        }
+
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 2rem;
+        }
+
+        .hero-slide.active {
+            opacity: 1;
+        }
+
+        .hero-slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, .75),
+                    rgba(0, 0, 0, .15)
+            );
+        }
+
+        .hero-slide .overlay {
+            position: relative;
+            z-index: 2;
+            max-width: 600px;
+        }
+
+        /* ===== CARDS ===== */
+        .info-card {
+            height: 100%;
+            transition: transform .3s ease;
+            border-radius: var(--bs-border-radius) !important; /* Добавлено */
+            overflow: hidden; /* Чтобы изображение соответствовало скруглению */
+        }
+
+        .info-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .info-card img {
+            height: 200px;
+            object-fit: cover;
+            border-top-left-radius: var(--bs-border-radius) !important; /* Исправлено */
+            border-top-right-radius: var(--bs-border-radius) !important; /* Исправлено */
+            border-bottom-left-radius: 0 !important;
+            border-bottom-right-radius: 0 !important;
+        }
+
+        /* Убираем стандартное скругление карточки Bootstrap если нужно */
+        .info-card.card {
+            border-radius: var(--bs-border-radius) !important;
+        }
+
+        .price {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Добавляем для полной консистентности с темой */
+        .info-card .card-body {
+            border-bottom-left-radius: calc(var(--bs-border-radius) - 1px);
+            border-bottom-right-radius: calc(var(--bs-border-radius) - 1px);
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index">AFISHA</a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="ms-auto d-flex align-items-center gap-3">
+
+                <form class="d-flex">
+                    <input class="form-control search-input me-2" placeholder="Поиск">
+                    <button class="btn btn-outline-primary">Найти</button>
+                </form>
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-success"
+                   sec:authorize="!isAuthenticated()">Вход</a>
+
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                        <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<div class="container">
+    <section class="hero"></section>
+</div>
+
+<!-- EVENTS -->
+<div class="container my-5">
+    <div class="row g-4">
+
+        <!-- CARD -->
+        <div class="col-md-4">
+            <div class="card info-card shadow-sm"><img
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Imagine_Dragons_-_Uncasville_CT_-_November_2017_-_2.jpg/330px-Imagine_Dragons_-_Uncasville_CT_-_November_2017_-_2.jpg"
+                    class="card-img-top" alt="Концерт 1">
+                <div class="card-body"><h5 class="card-title">Imagine Dragons Live</h5>
+                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 12 февраля</p>
+                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Минск-Арена</p>
+                    <div class="d-flex justify-content-between align-items-center"><span
+                            class="fw-bold">от 50 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Карточка 2 -->
+        <div class="col-md-4">
+            <div class="card info-card shadow-sm"><img
+                    src="https://www.billboard.com/wp-content/uploads/2022/01/Skillet-cr-Jimmy-Fontaine-press-2022-billboard-1548.jpg"
+                    class="card-img-top" alt="Концерт 2">
+                <div class="card-body"><h5 class="card-title">Рок-концерт The Skillet</h5>
+                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 20 февраля</p>
+                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Palace of Sports</p>
+                    <div class="d-flex justify-content-between align-items-center"><span
+                            class="fw-bold">от 60 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Карточка 3 -->
+        <div class="col-md-4">
+            <div class="card info-card shadow-sm"><img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShcEkMwKzIU-2ttARieH0AdSvmy4skPmk3LQ&s"
+                    class="card-img-top" alt="Концерт 3">
+                <div class="card-body"><h5 class="card-title">Cимфонический оркестр Imperial Orchestra</h5>
+                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 28 февраля</p>
+                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Большой театр</p>
+                    <div class="d-flex justify-content-between align-items-center"><span
+                            class="fw-bold">от 40 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Карточка 4 -->
+        <div class="col-md-4">
+            <div class="card info-card shadow-sm"><img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQALinpRACODi7uAfvzd1T6DLs02FKRzVCBIg&s"
+                    class="card-img-top" alt="Концерт 4">
+                <div class="card-body"><h5 class="card-title">Фестиваль электронной музыки</h5>
+                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 5 марта</p>
+                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Минск Экспо</p>
+                    <div class="d-flex justify-content-between align-items-center"><span
+                            class="fw-bold">от 70 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Карточка 5 -->
+        <div class="col-md-4">
+            <div class="card info-card shadow-sm"><img
+                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwOBhcHT5sykTP5GWh4vkYrMpOv1bnKJ0faA&s"
+                    class="card-img-top" alt="Концерт 5">
+                <div class="card-body"><h5 class="card-title">Jazz Night</h5>
+                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 12 марта</p>
+                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Клуб "Jazz Hall"</p>
+                    <div class="d-flex justify-content-between align-items-center"><span
+                            class="fw-bold">от 35 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <div class="mb-2">
+            <a href="#" class="me-3">Главная</a>
+            <a href="#" class="me-3">Контакты</a>
+            <a href="#">Помощь</a>
+        </div>
+        <small>© СП262 · Все события в одном месте</small>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const hero = document.querySelector('.hero');
+    const cards = document.querySelectorAll('.info-card');
+    const slides = [];
+
+    cards.forEach((card, i) => {
+        const img = card.querySelector('img')?.src;
+        const title = card.querySelector('.card-title')?.textContent;
+        const link = card.querySelector('.btn-primary')?.href;
+
+        if (!img) return;
+
+        const slide = document.createElement('div');
+        slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+        slide.style.backgroundImage = `url('${img}')`;
+
+        slide.innerHTML = `
+            <div class="overlay">
+                <h2 class="fw-bold">${title}</h2>
+                <a href="${link}" class="btn btn-primary mt-3">Подробнее</a>
+            </div>
+        `;
+
+        hero.appendChild(slide);
+        slides.push(slide);
+    });
+
+    let current = 0;
+    setInterval(() => {
+        slides[current].classList.remove('active');
+        current = (current + 1) % slides.length;
+        slides[current].classList.add('active');
+    }, 5000);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация | AFISHA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap и стили темы (как в login.html) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        /* Стили аналогичные login.html, можно вынести в отдельный файл */
+        body {
+            min-height: 100vh;
+            background: var(--color-base-100);
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .register-container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .register-card {
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius-lg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .register-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+            var(--color-success),
+            var(--color-primary),
+            var(--color-info));
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .register-title {
+            color: var(--color-base-content);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Остальные стили аналогичны login.html */
+        .form-label {
+            color: var(--color-base-content);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            background-color: var(--color-base-300);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--radius-field);
+            color: var(--color-base-content);
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            background-color: var(--color-base-200);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 0.25rem color-mix(in oklch, var(--color-primary) 25%, transparent);
+            color: var(--color-base-content);
+        }
+
+        .btn-register {
+            background: var(--color-success);
+            border: none;
+            color: var(--color-success-content);
+            border-radius: var(--radius-selector);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-register:hover {
+            background: color-mix(in oklch, var(--color-success) 90%, black);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+            font-size: 0.95rem;
+        }
+
+        .login-link a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        @media (max-width: 576px) {
+            .register-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="logo-container">
+            <a href="/" class="logo">AFISHA</a>
+            <p class="logo-subtitle">Присоединяйтесь к сообществу</p>
+        </div>
+
+        <h1 class="register-title">Создать аккаунт</h1>
+
+        <!-- Форма регистрации -->
+        <form th:action="@{/register}" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn btn-register">
+                <i class="bi bi-person-plus me-2"></i> Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="login-link">
+            Уже есть аккаунт? <a href="/login">Войти</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

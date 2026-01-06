@@ -1,0 +1,363 @@
+/* ===============================
+   AFISHA THEME (OKLCH) - UPDATED
+=============================== */
+
+:root {
+    /* ===== BASE COLORS ===== */
+    --color-base-100: oklch(20% 0.08 209);
+    --color-base-200: oklch(15% 0.08 209);
+    --color-base-300: oklch(10% 0.08 209);
+    --color-base-content: oklch(0.698 0.084 172.2);
+
+    /* ===== PRIMARY ===== */
+    --color-primary: oklch(0.551 0.089 118.218);
+    --color-primary-content: oklch(0.227 0.023 123.191);
+    --color-primary-halh: oklch(0.708 0.174 131.489);
+
+    /* ===== SECONDARY ===== */
+    --color-secondary: oklch(0.641 0.085 148.996);
+    --color-secondary-content: oklch(43.27% 0.0764 298.3);
+
+    /* ===== ACCENT ===== */
+    --color-accent: oklch(43% 0 0);
+    --color-accent-content: oklch(98% 0 0);
+
+    /* ===== NEUTRAL ===== */
+    --color-neutral: oklch(30% 0.08 209);
+    --color-neutral-content: oklch(90% 0.076 70.697);
+
+    /* ===== STATES ===== */
+    --color-info: oklch(74% 0.16 232.661);
+    --color-info-content: oklch(29% 0.066 243.157);
+    --color-success: oklch(79% 0.209 151.711);
+    --color-success-content: oklch(26% 0.065 152.934);
+    --color-warning: oklch(84.8% 0.1962 84.62);
+    --color-warning-content: oklch(44.8% 0.1962 84.62);
+    --color-error: oklch(65% 0.1985 24.22);
+    --color-error-content: oklch(27% 0.1985 24.22);
+
+    /* ===== BORDER RADIUS ===== */
+    --radius-selector: 2rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.5rem;
+
+    /* ===== SIZES ===== */
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+
+    /* ===== BOOTSTRAP COMPATIBILITY ===== */
+    --bs-body-bg: var(--color-base-100);
+    --bs-body-color: var(--color-base-content);
+
+    --bs-dark: var(--color-base-200);
+    --bs-light: var(--color-base-300);
+
+    --bs-primary: var(--color-primary);
+    --bs-primary-rgb: 220, 255, 230; /* Пример RGB для зелёного */
+    --bs-primary-text-emphasis: var(--color-primary-content);
+    --bs-primary-half: var(--color-primary-halh);
+
+    --bs-secondary: var(--color-secondary);
+    --bs-secondary-text-emphasis: var(--color-secondary-content);
+
+    --bs-info: var(--color-info);
+    --bs-info-text-emphasis: var(--color-info-content);
+
+    --bs-success: var(--color-success);
+    --bs-success-text-emphasis: var(--color-success-content);
+
+    --bs-warning: var(--color-warning);
+    --bs-warning-text-emphasis: var(--color-warning-content);
+
+    --bs-danger: var(--color-error);
+    --bs-danger-text-emphasis: var(--color-error-content);
+
+    --bs-border-radius: var(--radius-box);
+    --bs-border-radius-sm: calc(var(--radius-box) * 0.75);
+    --bs-border-radius-lg: calc(var(--radius-box) * 1.5);
+
+    --bs-border-color: var(--color-neutral);
+}
+
+/* ===============================
+   GLOBAL
+=============================== */
+body {
+    background-color: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.6;
+}
+
+/* ===============================
+   NAVBAR
+=============================== */
+.navbar {
+    background-color: var(--bs-dark) !important;
+    border-bottom: var(--border) solid var(--bs-border-color);
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--color-primary) !important;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    color: var(--color-base-content) !important;
+    opacity: 0.9;
+    transition: opacity 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    opacity: 1;
+    color: var(--color-primary) !important;
+}
+
+/* ===============================
+   BUTTONS
+=============================== */
+.btn {
+    border-radius: var(--radius-selector);
+    border-width: var(--border);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: var(--bs-primary-text-emphasis);
+}
+
+.btn-primary:hover {
+    background-color: color-mix(in oklch, var(--bs-primary) 90%, black);
+    border-color: color-mix(in oklch, var(--bs-primary) 90%, black);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-outline-primary {
+    color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    background-color: transparent;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--bs-primary);
+    color: var(--bs-primary-text-emphasis);
+}
+
+/* ===============================
+   CARDS
+=============================== */
+.card {
+    background-color: var(--color-base-200);
+    border: var(--border) solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    color: var(--bs-body-color);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.25);
+}
+
+.card-header {
+    background-color: var(--color-base-300);
+    border-bottom: var(--border) solid var(--bs-border-color);
+    padding: 1rem 1.5rem;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 0.75rem;
+}
+
+.card-footer {
+    background-color: var(--color-base-300);
+    border-top: var(--border) solid var(--bs-border-color);
+    padding: 1rem 1.5rem;
+}
+
+/* ===============================
+   FORMS
+=============================== */
+.form-control,
+.form-select {
+    background-color: var(--color-base-300);
+    border: var(--border) solid var(--bs-border-color);
+    border-radius: var(--radius-field);
+    color: var(--bs-body-color);
+    padding: var(--size-field) 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    background-color: var(--color-base-200);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.25rem color-mix(in oklch, var(--color-primary) 25%, transparent);
+    color: var(--bs-body-color);
+    outline: none;
+}
+
+.form-label {
+    color: var(--color-base-content);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* ===== SEARCH ===== */
+.search-input {
+    background-color: var(--color-base-300);
+    border: var(--border) solid var(--color-neutral);
+    border-radius: var(--radius-selector);
+    color: var(--color-base-content);
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.search-input::placeholder {
+    color: var(--color-base-content);
+    opacity: 0.6;
+}
+
+.search-input:focus {
+    background-color: var(--color-base-200);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.25rem color-mix(in oklch, var(--color-primary) 25%, transparent);
+    color: var(--color-base-content);
+}
+
+/* ===============================
+   LINKS
+=============================== */
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: color-mix(in oklch, var(--color-primary) 80%, #000000);
+    text-decoration: underline;
+}
+
+/* ===============================
+   ALERTS & BADGES
+=============================== */
+.alert {
+    border-radius: var(--radius-box);
+    border: var(--border) solid transparent;
+    padding: 1rem 1.5rem;
+}
+
+.alert-info {
+    background-color: color-mix(in oklch, var(--color-info) 15%, transparent);
+    border-color: var(--color-info);
+    color: var(--color-info-content);
+}
+
+.alert-success {
+    background-color: color-mix(in oklch, var(--color-success) 15%, transparent);
+    border-color: var(--color-success);
+    color: var(--color-success-content);
+}
+
+.alert-warning {
+    background-color: color-mix(in oklch, var(--color-warning) 15%, transparent);
+    border-color: var(--color-warning);
+    color: var(--color-warning-content);
+}
+
+.alert-danger {
+    background-color: color-mix(in oklch, var(--color-error) 15%, transparent);
+    border-color: var(--color-error);
+    color: var(--color-error-content);
+}
+
+.badge {
+    border-radius: var(--radius-selector);
+    font-weight: 600;
+    padding: 0.25rem 0.75rem;
+}
+
+/* ===============================
+   FOOTER
+=============================== */
+footer {
+    background-color: var(--color-base-200);
+    color: var(--color-base-content);
+    border-top: var(--border) solid var(--bs-border-color);
+    padding: 2rem 0;
+    margin-top: 3rem;
+}
+
+footer a {
+    color: var(--color-secondary);
+}
+
+footer a:hover {
+    color: var(--color-primary);
+}
+
+/* ===============================
+   UTILITIES
+=============================== */
+.bg-primary {
+    background-color: var(--color-primary) !important;
+    color: var(--color-primary-content) !important;
+}
+
+.bg-secondary {
+    background-color: var(--color-secondary) !important;
+    color: var(--color-secondary-content) !important;
+}
+
+.text-primary {
+    color: var(--color-primary) !important;
+}
+
+.text-secondary {
+    color: var(--color-secondary) !important;
+}
+
+.border {
+    border-color: var(--bs-border-color) !important;
+}
+
+/* ===============================
+   CUSTOM SCROLLBAR
+=============================== */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-base-200);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-neutral);
+    border-radius: var(--radius-selector);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}

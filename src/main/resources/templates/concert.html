@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Концерт — Imagine Dragons</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        .event-header {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            border-radius: var(--bs-border-radius-lg);
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .event-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.7);
+        }
+
+        .event-header .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.3));
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 2rem;
+        }
+
+        .event-header h1 {
+            color: var(--color-primary);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-header .lead {
+            color: var(--color-base-content);
+            opacity: 0.9;
+            font-size: 1.25rem;
+        }
+
+        .info-card {
+            background: var(--color-base-200);
+            border-radius: var(--bs-border-radius);
+            border: var(--border) solid var(--bs-border-color);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .info-card h3,
+        .info-card h5 {
+            color: var(--color-primary);
+            margin-bottom: 1rem;
+        }
+
+        .info-card p {
+            color: var(--color-base-content);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .ticket-card {
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ticket-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .ticket-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn-back {
+            background: var(--color-base-300);
+            color: var(--color-base-content);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--radius-selector);
+            padding: 0.5rem 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+        }
+
+        .btn-back:hover {
+            background: var(--color-base-200);
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        .section-title {
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .price-tag {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-success);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index">AFISHA</a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="ms-auto d-flex align-items-center gap-3">
+
+                <form class="d-flex">
+                    <input class="form-control search-input me-2" placeholder="Поиск">
+                    <button class="btn btn-outline-primary">Найти</button>
+                </form>
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-success"
+                   sec:authorize="!isAuthenticated()">Вход</a>
+
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                        <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Hero / Фото концерта -->
+    <section class="event-header">
+        <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg" alt="Imagine Dragons">
+        <div class="overlay">
+            <h1 class="display-5 fw-bold">Imagine Dragons Live</h1>
+            <p class="lead">
+                <i class="bi bi-geo-alt"></i> Минск-Арена •
+                <i class="bi bi-calendar"></i> 12 февраля
+            </p>
+        </div>
+    </section>
+
+    <div class="row g-4">
+        <!-- Левая колонка с информацией -->
+        <div class="col-lg-8">
+            <div class="info-card">
+                <h3 class="section-title">Описание концерта</h3>
+                <p>
+                    Концерт Imagine Dragons в Минск-Арене — это грандиозное шоу с лучшими хитами группы,
+                    живой оркестр и невероятная визуальная постановка. Приготовьтесь к незабываемому вечеру музыки!
+                </p>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="info-card h-100">
+                        <h5><i class="bi bi-calendar-event text-primary me-2"></i>Дата и время</h5>
+                        <p>12 февраля 2026 года, 19:00</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="info-card h-100">
+                        <h5><i class="bi bi-geo-alt text-primary me-2"></i>Место проведения</h5>
+                        <p>Минск-Арена, пр. Победителей, 111, Минск</p>
+                    </div>
+                </div>
+
+                <div class="col-md-12">
+                    <div class="info-card">
+                        <h5><i class="bi bi-ticket-perforated text-primary me-2"></i>Цена билетов</h5>
+                        <p class="price-tag mb-2">от 50 BYN</p>
+                        <p class="small">*Цены могут меняться в зависимости от выбранного места и категории</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Правая колонка с покупкой билетов -->
+        <div class="col-lg-4">
+            <div class="ticket-card">
+                <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg" class="card-img-top" alt="Imagine Dragons">
+                <div class="card-body text-center">
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-primary btn-lg">
+                            <i class="bi bi-cart3 me-2"></i>Купить билет
+                        </a>
+                    </div>
+
+                    <hr class="my-4" style="border-color: var(--bs-border-color);">
+
+                    <div class="text-start">
+                        <h6><i class="bi bi-info-circle me-2"></i>Информация:</h6>
+                        <ul class="list-unstyled small">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Электронные билеты</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Возврат возможен</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <div class="mb-2">
+            <a href="index" class="me-3">Главная</a>
+            <a href="#" class="me-3">Контакты</a>
+            <a href="#">Помощь</a>
+        </div>
+        <small>© СП262 · Все события в одном месте</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

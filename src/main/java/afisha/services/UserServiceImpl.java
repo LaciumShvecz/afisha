@@ -46,7 +46,7 @@ public class UserServiceImpl {
         ));
         updateUser.setName(user.getName());
         updateUser.setUsername(user.getUsername());
-        updateUser.setAge(user.getAge());
+        updateUser.setEmail(user.getEmail());
         if (!user.getPassword().equals(updateUser.getPassword())) {
             updateUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }

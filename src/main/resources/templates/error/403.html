@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>403 — Доступ запрещен</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: var(--color-base-100);
+            color: var(--color-base-content);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+            padding: 1rem;
+        }
+
+        .error-container {
+            max-width: 500px;
+            padding: 3rem 2rem;
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-icon {
+            font-size: 4rem;
+            color: var(--color-warning);
+            margin-bottom: 1.5rem;
+        }
+
+        .error-code {
+            font-size: 6rem;
+            font-weight: 900;
+            color: var(--color-warning);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .error-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--color-base-content);
+            margin-bottom: 1rem;
+        }
+
+        .error-description {
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .btn-error {
+            border-radius: var(--radius-selector);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-error:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .error-info {
+            padding: 1rem;
+            background: var(--color-base-300);
+            border-radius: var(--radius-field);
+            font-size: 0.9rem;
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+        }
+
+        .user-info {
+            margin-top: 0.5rem;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        /* Анимация тряски (shake) как в 500 */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        .error-code {
+            animation: shake 0.8s ease-in-out;
+        }
+
+        /* Анимация иконки (легкое плавание) */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .error-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .error-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .error-code {
+                font-size: 4rem;
+            }
+
+            .error-title {
+                font-size: 1.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-error {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .error-icon {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .error-container {
+                padding: 1.5rem 1rem;
+            }
+
+            .error-code {
+                font-size: 3.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="error-container">
+    <!-- Иконка -->
+    <div class="error-icon">
+        <i class="bi bi-shield-lock"></i>
+    </div>
+
+    <!-- Код ошибки с анимацией тряски -->
+    <div class="error-code">403</div>
+
+    <!-- Заголовок -->
+    <h1 class="error-title">Доступ запрещен</h1>
+
+    <!-- Описание -->
+    <p class="error-description">
+        У вас нет необходимых прав для доступа к этой странице.
+        Если вы считаете, что это ошибка, обратитесь к администратору.
+    </p>
+
+    <!-- Кнопки действий -->
+    <div class="btn-group">
+        <a href="/" class="btn btn-primary btn-error">
+            <i class="bi bi-house-door me-1"></i> На главную
+        </a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Дополнительная анимация при загрузке
+    document.addEventListener('DOMContentLoaded', function() {
+        // Плавное появление контейнера
+        const container = document.querySelector('.error-container');
+        container.style.opacity = '0';
+        container.style.transform = 'translateY(20px)';
+
+        setTimeout(() => {
+            container.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            container.style.opacity = '1';
+            container.style.transform = 'translateY(0)';
+        }, 100);
+
+        // Периодическое повторение анимации тряски
+        const errorCode = document.querySelector('.error-code');
+        setInterval(() => {
+            // Случайное повторение тряски каждые 10-30 секунд
+            if (Math.random() > 0.8) {
+                errorCode.style.animation = 'none';
+                setTimeout(() => {
+                    errorCode.style.animation = 'shake 0.8s ease-in-out';
+                }, 10);
+            }
+        }, 10000);
+    });
+</script>
+
+</body>
+</html>

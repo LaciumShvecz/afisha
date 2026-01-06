@@ -1,3 +1,4 @@
+<!--
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
@@ -36,13 +37,13 @@
         </div>
     </div>
 </nav>
-<!--Контейнер для содержимого страницы-->
+&lt;!&ndash;Контейнер для содержимого страницы&ndash;&gt;
 <div class="container-fluid flex-grow-1">
     <div class="row h-100">
-        <!-- Боковая панель -->
+        &lt;!&ndash; Боковая панель &ndash;&gt;
         <div class="col-2 sidebar d-flex flex-column p-0">
             <div class="list-group">
-                <!-- Ссылки -->
+                &lt;!&ndash; Ссылки &ndash;&gt;
                 <div sec:authorize="hasRole('ROLE_ADMIN')">
                     <a th:href="@{/admin}" class="list-group-item list-group-item-action border-0 text-primary"
                        id="admin-tab"
@@ -53,11 +54,11 @@
         </div>
 
 
-        <!--Панель пользователя-->
+        &lt;!&ndash;Панель пользователя&ndash;&gt;
         <div class="col-10 bg-secondary bg-light full-height">
 
             <div class="container-fluid" id="user">
-                <!--Наименование панели-->
+                &lt;!&ndash;Наименование панели&ndash;&gt;
                 <h1 class="pt-3 pb-3">
                     User information-page
                 </h1>
@@ -66,9 +67,9 @@
                         <div class="tab-pane fade show active" id="users-table" role="tabpanel"
                              aria-labelledby="users-table-tab">
 
-                            <!--Загрузка фрагмента для профиля админа-->
+                            &lt;!&ndash;Загрузка фрагмента для профиля админа&ndash;&gt;
                             <div th:fragment="user">
-                                <!--Таблица данных пользователя-->
+                                &lt;!&ndash;Таблица данных пользователя&ndash;&gt;
                                 <table class="table table-bordered table-striped">
                                     <tbody>
                                     <tr>
@@ -108,5 +109,297 @@
 </div>
 <script src="/scripts/user.js"></script>
 
+</body>
+</html>-->
+
+
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Личный кабинет — Afisha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        .profile-header {
+            background: var(--color-base-200);
+            color: var(--color-base-content);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: var(--border) solid var(--bs-border-color);
+        }
+
+        .profile-header h1 {
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .profile-header p {
+            color: var(--color-base-content);
+            opacity: 0.9;
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+
+        .profile-header .badge {
+            background: var(--color-primary);
+            color: var(--color-primary-content);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-selector);
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
+
+        .section-title {
+            color: var(--color-primary);
+            border-bottom: 2px solid var(--color-primary);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .ticket-card {
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .ticket-card img {
+            height: 180px;
+            object-fit: cover;
+            width: 100%;
+            border-top-left-radius: var(--bs-border-radius);
+            border-top-right-radius: var(--bs-border-radius);
+        }
+
+        .ticket-card .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.25rem;
+        }
+
+        .ticket-card .card-title {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        .ticket-card .card-text {
+            color: color-mix(in oklch, var(--color-base-content) 80%, transparent);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .ticket-card .card-text i {
+            color: var(--color-primary);
+            opacity: 0.8;
+            margin-right: 0.5rem;
+        }
+
+        .ticket-card .fw-bold {
+            color: var(--color-success) !important;
+            font-size: 1rem;
+        }
+
+        .empty-state {
+            background: var(--color-base-200);
+            border: 2px dashed var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--color-neutral);
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h4 {
+            color: var(--color-base-content);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+            margin-bottom: 1.5rem;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="index">AFISHA</a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="ms-auto d-flex align-items-center gap-3">
+
+                <form class="d-flex">
+                    <input class="form-control search-input me-2" placeholder="Поиск">
+                    <button class="btn btn-outline-primary">Найти</button>
+                </form>
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-success"
+                   sec:authorize="!isAuthenticated()">Вход</a>
+
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                        <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container my-4">
+
+    <!-- Заголовок профиля -->
+    <section class="profile-header">
+        <div class="container">
+            <h1 >qwerty</h1>
+            <p >qwerty@example.com</p>
+            <div class="badge">
+                <i class="bi bi-person-circle me-1"></i>Личный кабинет
+            </div>
+        </div>
+    </section>
+
+    <!-- Статистика -->
+
+
+    <!-- Мои бронирования -->
+    <h3 class="section-title">Мои забронированные концерты</h3>
+
+    <div class="row g-4 mt-2">
+        <!-- Перебор бронирований -->
+        <div class="col-md-4" each="booking : ${bookings}">
+            <div class="ticket-card">
+                <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg"
+                     class="card-img-top" alt="Concert Image">
+                <div class="card-body">
+                    <div>
+
+                        <p class="card-text">
+                            <i class="bi bi-calendar"></i>
+                            <span >12 февраля</span>
+                        </p>
+
+                        <p class="card-text">
+                            <i class="bi bi-clock"></i>
+                            <span >19:00</span>
+                        </p>
+
+                        <p class="card-text">
+                            <i class="bi bi-geo-alt"></i>
+                            <span >Минск-Арена</span>
+                        </p>
+
+                        <p class="card-text">
+                            <i class="bi bi-ticket-perforated"></i>
+                            Количество билетов:
+                            <strong >2</strong>
+                        </p>
+
+                        <p class="card-text fw-bold">
+                            <i class="bi bi-cash-coin"></i>
+                            Итого:
+                            <span>100</span> BYN
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a
+                           class="btn btn-sm btn-primary">
+                            <i class="bi bi-eye me-1"></i>Подробнее
+                        </a>
+
+                        <form
+                              method="post"
+                              onsubmit="return confirm('Вы уверены, что хотите отменить бронирование?')">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-circle me-1"></i>Отменить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Если нет бронирований -->
+        <div class="col-12" >
+            <div class="empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <h4>У вас пока нет забронированных концертов</h4>
+                <p>Начните с просмотра доступных событий и выберите то, что вам по душе!</p>
+                <a href="index" class="btn btn-primary">Посмотреть события</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <div class="mb-2">
+            <a href="index" class="me-3">Главная</a>
+            <a href="#" class="me-3">Контакты</a>
+            <a href="#" class="me-3">Помощь</a>
+            <a href="#">Настройки</a>
+        </div>
+        <small>© СП262 · Все события в одном месте</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Подтверждение отмены бронирования
+    document.addEventListener('DOMContentLoaded', function() {
+        const cancelForms = document.querySelectorAll('form[action*="cancel"]');
+        cancelForms.forEach(form => {
+            form.addEventListener('submit', function(e) {
+                if (!confirm('Вы уверены, что хотите отменить бронирование?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

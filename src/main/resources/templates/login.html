@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход | AFISHA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: var(--color-base-100);
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            margin: 0 auto;
+        }
+
+        .login-card {
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius-lg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg,
+            var(--color-primary),
+            var(--color-secondary),
+            var(--color-info));
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            color: var(--color-primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo-subtitle {
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        .login-title {
+            color: var(--color-base-content);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            color: var(--color-base-content);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            background-color: var(--color-base-300);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--radius-field);
+            color: var(--color-base-content);
+            padding: 0.75rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus {
+            background-color: var(--color-base-200);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 0.25rem color-mix(in oklch, var(--color-primary) 25%, transparent);
+            color: var(--color-base-content);
+        }
+
+        .form-control::placeholder {
+            color: color-mix(in oklch, var(--color-base-content) 50%, transparent);
+        }
+
+        .input-group-text {
+            background-color: var(--color-base-300);
+            border: var(--border) solid var(--bs-border-color);
+            color: var(--color-base-content);
+            border-right: none;
+        }
+
+        .btn-login {
+            background: var(--color-primary);
+            border: none;
+            color: var(--color-primary-content);
+            border-radius: var(--radius-selector);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .btn-login:hover {
+            background: color-mix(in oklch, var(--color-primary) 90%, black);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: color-mix(in oklch, var(--color-base-content) 50%, transparent);
+            font-size: 0.9rem;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--bs-border-color);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+            font-size: 0.95rem;
+        }
+
+        .register-link a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .register-link a:hover {
+            color: var(--color-secondary);
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background: color-mix(in oklch, var(--color-error) 15%, transparent);
+            border: 1px solid var(--color-error);
+            border-radius: var(--radius-field);
+            color: var(--color-error);
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-message i {
+            font-size: 1.1rem;
+        }
+
+        .success-message {
+            background: color-mix(in oklch, var(--color-success) 15%, transparent);
+            border: 1px solid var(--color-success);
+            border-radius: var(--radius-field);
+            color: var(--color-success);
+            padding: 0.75rem 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .password-toggle {
+            background: transparent;
+            border: none;
+            color: var(--color-base-content);
+            opacity: 0.7;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+        }
+
+        .password-toggle:hover {
+            opacity: 1;
+        }
+
+        .form-check {
+            margin-top: 1rem;
+        }
+
+        .form-check-input {
+            background-color: var(--color-base-300);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--radius-field);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--color-primary);
+            border-color: var(--color-primary);
+        }
+
+        .form-check-label {
+            color: var(--color-base-content);
+            font-size: 0.9rem;
+            user-select: none;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card {
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Социальные кнопки */
+        .social-login {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .social-btn {
+            flex: 1;
+            padding: 0.75rem;
+            border-radius: var(--radius-field);
+            border: var(--border) solid var(--bs-border-color);
+            background: var(--color-base-300);
+            color: var(--color-base-content);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            background: var(--color-base-200);
+            transform: translateY(-2px);
+            text-decoration: none;
+        }
+
+        .social-btn.google:hover {
+            border-color: #DB4437;
+            color: #DB4437;
+        }
+
+        .social-btn.github:hover {
+            border-color: #333;
+            color: #333;
+        }
+
+        .social-btn.vk:hover {
+            border-color: #4C75A3;
+            color: #4C75A3;
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 576px) {
+            .login-card {
+                padding: 2rem 1.5rem;
+            }
+
+            body {
+                padding: 0.5rem;
+            }
+
+            .social-login {
+                flex-direction: column;
+            }
+        }
+
+        /* Дополнительные элементы */
+        .login-features {
+            margin-top: 2rem;
+            border-top: 1px solid var(--bs-border-color);
+            padding-top: 1.5rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: color-mix(in oklch, var(--color-base-content) 70%, transparent);
+            font-size: 0.9rem;
+        }
+
+        .feature-item i {
+            color: var(--color-success);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="login-card">
+        <!-- Логотип -->
+        <div class="logo-container">
+            <a href="/" class="logo">AFISHA</a>
+            <p class="logo-subtitle">Все события в одном месте</p>
+        </div>
+
+        <!-- Заголовок -->
+        <h1 class="login-title">Вход в систему</h1>
+
+        <!-- Сообщения об ошибках -->
+        <div th:if="${param.error}" class="error-message">
+            <i class="bi bi-exclamation-triangle"></i>
+            Неверное имя пользователя или пароль
+        </div>
+
+        <div th:if="${param.registered}" class="success-message">
+            <i class="bi bi-check-circle"></i>
+            Регистрация успешна! Теперь вы можете войти
+        </div>
+
+        <!-- Форма входа -->
+        <form th:action="@{/login}" method="post">
+            <!-- Поле имени пользователя -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Имя пользователя</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <input type="text"
+                           class="form-control"
+                           id="username"
+                           name="username"
+                           placeholder="Введите имя пользователя"
+                           th:value="${param.username}"
+                           required
+                           autofocus>
+                </div>
+            </div>
+
+            <!-- Поле пароля -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-lock"></i>
+                    </span>
+                    <input type="password"
+                           class="form-control"
+                           id="password"
+                           name="password"
+                           placeholder="Введите пароль"
+                           required>
+                    <button type="button"
+                            class="input-group-text password-toggle"
+                            onclick="togglePasswordVisibility()">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                </div>
+                <div class="mt-2 text-end">
+                    <a href="/forgot-password" class="small" style="color: var(--color-info); text-decoration: none;">
+                        Забыли пароль?
+                    </a>
+                </div>
+            </div>
+
+            <!-- Кнопка входа -->
+            <button type="submit" class="btn btn-login">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Войти
+            </button>
+        </form>
+
+        <!-- Ссылка на регистрацию -->
+        <div class="register-link">
+            Нет аккаунта? <a href="/register">Зарегистрироваться</a>
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Фокусировка на поле ввода при загрузке
+        const usernameField = document.getElementById('username');
+        if (usernameField && !usernameField.value) {
+            usernameField.focus();
+        }
+
+        // Добавляем плавную анимацию появления
+        const card = document.querySelector('.login-card');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+
+        setTimeout(() => {
+            card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, 100);
+    });
+
+    // Переключение видимости пароля
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const toggleButton = document.querySelector('.password-toggle i');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleButton.classList.remove('bi-eye');
+            toggleButton.classList.add('bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleButton.classList.remove('bi-eye-slash');
+            toggleButton.classList.add('bi-eye');
+        }
+    }
+
+    // Валидация формы перед отправкой
+    const loginForm = document.querySelector('form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', function(e) {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!username || !password) {
+                e.preventDefault();
+
+                // Показываем ошибку
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message mt-3';
+                errorDiv.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Заполните все поля';
+
+                // Удаляем предыдущие ошибки
+                const existingError = document.querySelector('.error-message:not([th\\:if])');
+                if (existingError) {
+                    existingError.remove();
+                }
+
+                // Вставляем перед формой
+                loginForm.parentNode.insertBefore(errorDiv, loginForm);
+
+                // Плавное выделение пустых полей
+                if (!username) {
+                    document.getElementById('username').style.borderColor = 'var(--color-error)';
+                }
+                if (!password) {
+                    document.getElementById('password').style.borderColor = 'var(--color-error)';
+                }
+
+                // Убираем выделение через 2 секунды
+                setTimeout(() => {
+                    document.getElementById('username').style.borderColor = '';
+                    document.getElementById('password').style.borderColor = '';
+                }, 2000);
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

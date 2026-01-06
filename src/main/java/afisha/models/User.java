@@ -5,6 +5,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -26,8 +28,10 @@ public class User implements UserDetails {
     @Column(name = "username", nullable = false, unique = true, length = 20)
     private String username;
 
-    @Column(name = "age")
-    private Byte age;
+    @NotBlank(message = "Email обязателен")
+    @Email(message = "Некорректный email")
+    @Column(name = "email")
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
@@ -41,10 +45,10 @@ public class User implements UserDetails {
 
     }
 
-    public User(String name, String username, Byte age, String password, Collection<Role> roles) {
+    public User(String name, String username, String email, String password, Collection<Role> roles) {
         this.name = name;
         this.username = username;
-        this.age = age;
+        this.email = email;
         this.password = password;
         this.roles = roles;
 
@@ -74,12 +78,12 @@ public class User implements UserDetails {
         this.username = username;
     }
 
-    public Byte getAge() {
-        return age;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAge(Byte age) {
-        this.age = age;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Override

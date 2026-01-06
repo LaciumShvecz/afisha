@@ -1,355 +1,906 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <title>Пользователи | Админ-панель</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Admin Panel</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
-          crossorigin="anonymous">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
     <style>
-        html, body {
-            height: 100%;
-        }
+        /* Общие стили админ-панели */
+        .admin-container { min-height: 100vh; background: var(--color-base-100); padding-top: 1rem; }
+        .admin-header { background: var(--color-base-200); border-bottom: var(--border) solid var(--bs-border-color); padding: 1rem 0; margin-bottom: 2rem; }
+        .admin-nav { background: var(--color-base-200); border-right: var(--border) solid var(--bs-border-color); min-height: calc(100vh - 100px); padding: 1.5rem 0; }
+        .admin-content { padding: 1.5rem; }
+        .admin-card { background: var(--color-base-200); border: var(--border) solid var(--bs-border-color); border-radius: var(--bs-border-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1.5rem; overflow: hidden; }
+        .admin-card-header { background: var(--color-base-300); border-bottom: var(--border) solid var(--bs-border-color); padding: 1rem 1.5rem; color: var(--color-primary); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .admin-card-body { padding: 1.5rem; }
+        .nav-item { margin-bottom: 0.25rem; }
+        .nav-link { color: var(--color-base-content); padding: 0.75rem 1rem; border-radius: var(--radius-field); display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s ease; }
+        .nav-link:hover, .nav-link.active { background: var(--color-base-300); color: var(--color-primary); text-decoration: none; }
+        .nav-link i { width: 1.25rem; text-align: center; }
+        .admin-badge { background: var(--color-primary); color: var(--color-primary-content); border-radius: var(--radius-selector); padding: 0.25rem 0.75rem; font-size: 0.75rem; font-weight: 600; margin-left: auto; }
+        .search-box { background: var(--color-base-300); border: var(--border) solid var(--bs-border-color); border-radius: var(--radius-selector); padding: 0.75rem 1rem; color: var(--color-base-content); }
+        .search-box:focus { border-color: var(--color-primary); box-shadow: 0 0 0 0.25rem color-mix(in oklch, var(--color-primary) 25%, transparent); outline: none; }
 
-        .full-height {
-            height: 100%;
-        }
+        /* Специфичные стили для страницы пользователей */
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--color-primary); }
+        .user-table { background: var(--color-base-200); border-radius: var(--bs-border-radius); overflow: hidden; border: var(--border) solid var(--bs-border-color); }
+        .user-table thead { background: var(--color-base-300); color: var(--color-base-content); border-bottom: var(--border) solid var(--bs-border-color); }
+        .user-table th { color: var(--color-primary); font-weight: 600; padding: 1rem; border-bottom: 2px solid var(--color-primary) !important; }
+        .user-table td { padding: 1rem; color: var(--color-base-content); border-bottom: var(--border) solid var(--bs-border-color); vertical-align: middle; }
+        .user-table tbody tr:hover { background: color-mix(in oklch, var(--color-base-300) 50%, transparent); }
 
-        #sidebar-tabs .list-group-item.active {
-            background-color: #007bff; /* Цвет фона активной вкладки */
-            color: white !important; /* Цвет текста активной вкладки */
-        }
+        .role-badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: var(--radius-selector); font-size: 0.75rem; font-weight: 600; }
+        .role-admin { background: color-mix(in oklch, var(--color-warning) 20%, transparent); color: var(--color-warning); }
+        .role-user { background: color-mix(in oklch, var(--color-info) 20%, transparent); color: var(--color-info); }
 
+        .user-actions { display: flex; gap: 0.5rem; }
+        .btn-admin-sm { border-radius: var(--radius-field); padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s ease; }
+
+        .user-stats { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .stat-item { background: var(--color-base-300); border-radius: var(--radius-field); padding: 1rem; min-width: 120px; text-align: center; }
+        .stat-number { font-size: 1.5rem; font-weight: 700; color: var(--color-primary); display: block; }
+        .stat-label { font-size: 0.85rem; color: var(--color-base-content); opacity: 0.8; }
+
+        /* Модальные окна */
+        .modal-content { background: var(--color-base-200); border: var(--border) solid var(--bs-border-color); border-radius: var(--bs-border-radius); }
+        .modal-header { background: var(--color-base-300); border-bottom: var(--border) solid var(--bs-border-color); color: var(--color-primary); }
+        .modal-body { color: var(--color-base-content); }
+        .modal-footer { border-top: var(--border) solid var(--bs-border-color); }
+
+        .error-message { color: var(--color-error); font-size: 0.9rem; margin-top: 0.25rem; }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .admin-nav { min-height: auto; border-right: none; border-bottom: var(--border) solid var(--bs-border-color); margin-bottom: 1rem; padding: 1rem; }
+            .user-table { font-size: 0.9rem; }
+            .user-actions { flex-direction: column; }
+        }
     </style>
 </head>
-<body class="d-flex flex-column">
-<nav class="navbar navbar-expand-lg bg-dark">
-    <div class="container-fluid">
-        <!--Навигационная панель с кнопкой-->
-        <a class="navbar-brand text-white ">
-            <span id="currentUserNavbar">
-            </span>
-        </a>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link text-secondary" href="/logout">Logout</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<!--Контейнер для содержимого страницы-->
-<div class="container-fluid flex-grow-1">
-    <div class="row h-100">
-        <!-- Боковая панель -->
-        <div class="col-2 sidebar d-flex flex-column p-0" id="sidebar-tabs" role="tablist">
-            <div class="list-group">
-                <!-- Ссылки -->
-                <a class="list-group-item list-group-item-action border-0 text-primary active no-refresh" id="admin-tab"
-                   data-bs-toggle="tab" href="" role="tab" aria-controls="admin" aria-selected="true">
-                    Admin
-                </a>
-                <a class="list-group-item list-group-item-action border-0 text-primary no-refresh"
-                   th:href="@{/user}">
-                    User
-                </a>
+<body class="admin-container">
+
+<!-- Header -->
+<header class="admin-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <h1 class="h4 mb-0" style="color: var(--color-primary);">
+                    <i class="bi bi-people me-2"></i>Пользователи | Админ-панель
+                </h1>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+                <input type="text" class="search-box" placeholder="Поиск пользователей..." style="max-width: 250px;" id="searchUsers">
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                        <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
+</header>
 
-        <!--Панель администратора-->
-        <div class="col-10 bg-secondary bg-light">
-            <div class="container-fluid tab-content">
-                <div>
-                    <!--Наименование панели-->
-                    <h1 class="pt-3 pb-3">
-                        Admin panel
-                    </h1>
-                    <!--Горизонтальные вкладки-->
-                    <ul class="nav nav-tabs" id="nav-tab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link  no-refresh active" id="admin-users-table-tab" data-bs-toggle="tab"
-                                    data-bs-target="#admin-users-table" type="button" role="tab"
-                                    aria-controls="users-table"
-                                    aria-selected="true">
-                                Users table
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link no-refresh" id="new-user-tab" data-bs-toggle="tab"
-                                    data-bs-target="#add-user"
-                                    type="button" role="tab" aria-controls="add-user-tab" aria-selected="false">
-                                New User
-                            </button>
-                        </li>
-                    </ul>
-                    <div class="tab-content">
-                        <div class="tab-pane fade show active" id="admin-users-table" role="tabpanel"
-                             aria-labelledby="users-table">
-                            <!--Таблица с пользователями-->
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                <tr>
-                                    <td class="container-fluid">
-                                        <h5>
-                                            All Users
-                                        </h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="container-fluid">
-                                        <table class="table table-striped">
-                                            <thead>
-                                            <tr>
-                                                <th class="col" scope="col">Name</th>
-                                                <th class="col" scope="col">Username</th>
-                                                <th class="col" scope="col">Age</th>
-                                                <th class="col" scope="col">Password</th>
-                                                <th class="col" scope="col">Roles</th>
-                                                <th class="col" scope="col">Edit</th>
-                                                <th class="col" scope="col">Delete</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody id="usersTableId">
-                                            <tr>
-                                                <!-- Окно обновления-->
-                                                <div class="modal fade" id="editModal">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h1 class="modal-title fs-5" id="editLabel">Edit
-                                                                    user</h1>
-                                                                <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal" aria-label="Close">
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <form id="formEditUser">
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 admin-nav">
+            <div class="nav flex-column">
+                <div class="nav-item">
+                    <a class="nav-link" href="/admin-concerts">
+                        <i class="bi bi-music-note-list"></i>
+                        Концерты
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link active" href="/admin">
+                        <i class="bi bi-people"></i>
+                        Пользователи
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link" href="/admin/venues">
+                        <i class="bi bi-geo-alt"></i>
+                        Места проведения
+                    </a>
+                </div>
+            </div>
+        </nav>
 
-                                                                    <div class="mb-3">
-                                                                        <label for="nameEdit"
-                                                                               class="col-form-label">Name</label>
-                                                                        <input type="text" name="ame"
-                                                                               class="form-control" id="nameEdit"
-                                                                               data-user-id="name"/>
-                                                                        <span id="nameEditError"
-                                                                              class="text-danger">
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <label for="usernameEdit"
-                                                                               class="col-form-label">Username</label>
-                                                                        <input type="text" name="username"
-                                                                               class="form-control" id="usernameEdit"
-                                                                               data-user-id="username"/>
-                                                                        <span id="usernameEditError"
-                                                                              class="text-danger">
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="ageEdit"
-                                                                               class="col-form-label">Age</label>
-                                                                        <input type="number" name="age"
-                                                                               class="form-control" id="ageEdit"
-                                                                               data-user-id="age"/>
-                                                                        <span id="ageEditError"
-                                                                              class="text-danger">
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="passwordEdit"
-                                                                               class="col-form-label">Password</label>
-                                                                        <input type="text" name="password"
-                                                                               class="form-control" id="passwordEdit"
-                                                                               data-user-id="password"/>
-                                                                        <span id="passwordEditError"
-                                                                              class="text-danger">
-                                                                        </span>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="allRolesEdit"><b>Role</b></label>
-                                                                        <select multiple class="form-control"
-                                                                                id="allRolesEdit" name="roles"
-                                                                                size="2"
-                                                                                data-user-id="allRolesEdit"
-                                                                                required>
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                                data-bs-dismiss="modal"
-                                                                                aria-label="Close">Close
-                                                                        </button>
-                                                                        <button type="submit" class="btn btn-primary">
-                                                                            Edit
-                                                                        </button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+        <!-- Main Content -->
+        <main class="col-md-9 col-lg-10 admin-content">
+            <!-- Статистика пользователей -->
+            <div class="user-stats" id="userStats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalUsers">0</span>
+                    <span class="stat-label">Всего</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="adminCount">0</span>
+                    <span class="stat-label">Администраторы</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="userCount">0</span>
+                    <span class="stat-label">Пользователи</span>
+                </div>
+            </div>
 
-                                                <!-- Окно удаления-->
-                                                <div id="deleteModal" class="modal fade">
-                                                    <div class="modal-dialog">
-                                                        <div class="modal-content">
-                                                            <div class="modal-header">
-                                                                <h1 class="modal-title fs-5">Delete user</h1>
-                                                                <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal" aria-label="Close">
-                                                                </button>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <form id="formDeleteUser">
-                                                                    <div class="mb-3">
-                                                                        <label for="nameDelete"
-                                                                               class="col-form-label">Name</label>
-                                                                        <input type="text" name="uname"
-                                                                               class="form-control" id="nameDelete"
-                                                                               data-user-id="name" readonly/>
-                                                                    </div>
-                                                                    <div class="mb-3">
-                                                                        <label for="usernameDelete"
-                                                                               class="col-form-label">Username</label>
-                                                                        <input type="text" name="username"
-                                                                               class="form-control" id="usernameDelete"
-                                                                               data-user-id="username" readonly/>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="ageDelete"
-                                                                               class="col-form-label">Age</label>
-                                                                        <input type="text" name="age"
-                                                                               class="form-control"
-                                                                               id="ageDelete"
-                                                                               required minlength="1" maxlength="3"
-                                                                               data-user-id="age" readonly/>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="passwordDelete"
-                                                                               class="col-form-label">Password</label>
-                                                                        <input type="text" name="password"
-                                                                               class="form-control" id="passwordDelete"
-                                                                               data-user-id="password" readonly/>
-                                                                    </div>
-                                                                    <div class="mb-2">
-                                                                        <label for="allRolesDelete"><b>Role</b></label>
-                                                                        <select class="form-control"
-                                                                                id="allRolesDelete"
-                                                                                data-user-id="allRolesDelete"
-                                                                                name="roles"
-                                                                                size="2">
-                                                                        </select>
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                                data-bs-dismiss="modal"
-                                                                                aria-label="Close">Close
-                                                                        </button>
-                                                                        <button type="submit" class="btn btn-danger">
-                                                                            Delete
-                                                                        </button>
-                                                                    </div>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!--Вкладка добавления пользователя-->
-                        <div class="tab-pane fade" id="add-user" role="tabpanel" aria-labelledby="add-user-tab">
-                            <table class="table table-bordered table-striped">
-                                <tbody>
-                                <tr>
-                                    <td class="container-fluid">
-                                        <h5 class="mt-3">Add new user</h5>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="container-fluid">
-                                        <div class="card-body text-center">
-                                            <div class="col-md-4 offset-md-4">
-                                                <form id="saveNewUser">
-                                                    <div class="mb-3">
-                                                        <label for="nameNew" class="col-form-label">Name</label>
-                                                        <input type="text" name="name"
-                                                               class="form-control" id="nameNew"
-                                                               placeholder="Name"/>
-                                                        <span id="nameError" class="text-danger">
-                                                        </span>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="usernameNew" class="col-form-label">Username</label>
-                                                        <input type="text" name="username"
-                                                               class="form-control" id="usernameNew"
-                                                               placeholder="Username"/>
-                                                        <span id="usernameError" class="text-danger">
-                                                        </span>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="ageNew"
-                                                               class="col-form-label">Age</label>
-                                                        <input type="number" name="age"
-                                                               class="form-control" id="ageNew"
-                                                               placeholder="Age"/>
-                                                        <span id="ageError" class="text-danger">
-                                                        </span>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="passwordNew" class="col-form-label">Password</label>
-                                                        <input type="text" name="password"
-                                                               class="form-control" id="passwordNew"
-                                                               placeholder="Password"/>
-                                                        <span id="passwordError" class="text-danger">
-                                                        </span>
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label class="font-weight-bold" for="rolesNew">Role</label>
-                                                        <select class="custom-select form-control" id="rolesNew"
-                                                                name="roles"
-                                                                multiple
-                                                                size="2"
-                                                                required>
-                                                            <option value="ROLE_ADMIN">ADMIN</option>
-                                                            <option value="ROLE_USER">USER</option>
-                                                        </select>
-                                                    </div>
-                                                    <div class="d-grid col-6 mx-auto">
-                                                        <input type="submit" class="btn btn-success"
-                                                               value="Add new user"/>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>
+            <!-- Карточка управления -->
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span>Управление пользователями</span>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-admin-sm" onclick="showAddModal()">
+                            <i class="bi bi-person-plus me-1"></i> Добавить
+                        </button>
                     </div>
                 </div>
+
+                <div class="admin-card-body">
+                    <!-- Таблица пользователей -->
+                    <div class="table-responsive">
+                        <table class="table user-table">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Имя</th>
+                                <th>Username</th>
+                                <th>Возраст</th>
+                                <th>Пароль</th>
+                                <th>Роли</th>
+                                <th class="text-center">Действия</th>
+                            </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                            <!-- Данные загружаются динамически через JavaScript -->
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Загрузка...</span>
+                                    </div>
+                                    <p class="mt-2">Загрузка пользователей...</p>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Модальное окно добавления пользователя -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Добавить нового пользователя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saveNewUser">
+                    <div class="mb-3">
+                        <label for="nameNew" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="nameNew" name="name" placeholder="Имя" required>
+                        <div class="error-message" id="nameError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="usernameNew" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="usernameNew" name="username" placeholder="Username" required>
+                        <div class="error-message" id="usernameError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ageNew" class="form-label">Возраст</label>
+                        <input type="number" class="form-control" id="ageNew" name="age" placeholder="Возраст" required>
+                        <div class="error-message" id="ageError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="passwordNew" class="form-label">Пароль</label>
+                        <input type="password" class="form-control" id="passwordNew" name="password" placeholder="Пароль" required>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="rolesNew" class="form-label">Роли</label>
+                        <select class="form-control" id="rolesNew" name="roles" multiple size="3" required>
+                            <option value="ROLE_ADMIN">ADMIN</option>
+                            <option value="ROLE_USER">USER</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-<script src="/scripts/app.js"></script>
-<script src="/scripts/usersTable.js"></script>
-<script src="/scripts/saveNewUser.js"></script>
-<script src="/scripts/editUser.js"></script>
-<script src="/scripts/deleteUser.js"></script>
-<script src="/scripts/fillModal.js"></script>
+<!-- Модальное окно редактирования пользователя -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Редактировать пользователя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditUser">
+                    <input type="hidden" id="editUserId" name="id">
+                    <div class="mb-3">
+                        <label for="editName" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                        <div class="error-message" id="nameEditError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUsername" name="username" required>
+                        <div class="error-message" id="usernameEditError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAge" class="form-label">Возраст</label>
+                        <input type="number" class="form-control" id="editAge" name="age" required>
+                        <div class="error-message" id="ageEditError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPassword" class="form-label">Пароль (оставьте пустым, если не хотите менять)</label>
+                        <input type="password" class="form-control" id="editPassword" name="password">
+                        <div class="error-message" id="passwordEditError"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRoles" class="form-label">Роли</label>
+                        <select class="form-control" id="editRoles" name="roles" multiple size="3" required>
+                            <option value="ROLE_ADMIN">ADMIN</option>
+                            <option value="ROLE_USER">USER</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно удаления пользователя -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Удалить пользователя</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDeleteUser">
+                    <input type="hidden" id="deleteUserId" name="id">
+                    <div class="mb-3">
+                        <label for="deleteName" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="deleteName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="deleteUsername" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteAge" class="form-label">Возраст</label>
+                        <input type="text" class="form-control" id="deleteAge" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="deleteRoles" class="form-label">Роли</label>
+                        <select class="form-control" id="deleteRoles" multiple size="2" disabled>
+                            <option value="ROLE_ADMIN">ADMIN</option>
+                            <option value="ROLE_USER">USER</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Вы уверены, что хотите удалить этого пользователя? Это действие нельзя отменить.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Глобальные переменные
+    let allUsers = [];
+    let allRoles = []; // Для хранения ролей
+
+    // Функция загрузки пользователей (аналогично вашему fillTableOfAllUsers)
+    async function loadUsers() {
+        try {
+            console.log('Загрузка пользователей из /api/admin/users...');
+            const response = await fetch("/api/admin/users");
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            allUsers = await response.json();
+            console.log('Получены пользователи:', allUsers);
+
+            renderUsers();
+            updateStats();
+
+        } catch (error) {
+            console.error('Ошибка загрузки пользователей:', error);
+            document.getElementById('usersTableBody').innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="bi bi-exclamation-triangle text-warning display-4 mb-3"></i>
+                        <p>Ошибка загрузки пользователей</p>
+                        <small class="text-muted">${error.message}</small>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="loadUsers()">
+                            <i class="bi bi-arrow-clockwise"></i> Повторить
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    // Функция загрузки ролей (аналогично вашему getRoles)
+    async function loadRoles() {
+        try {
+            console.log('Загрузка ролей из /api/admin/roles...');
+            const response = await fetch("/api/admin/roles");
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            allRoles = await response.json();
+            console.log('Получены роли:', allRoles);
+
+        } catch (error) {
+            console.error('Ошибка загрузки ролей:', error);
+        }
+    }
+
+    // Функция рендеринга пользователей
+    function renderUsers() {
+        const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
+
+        if (allUsers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="bi bi-people display-4 text-muted mb-3"></i>
+                        <p>Нет пользователей</p>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let usersTableHTML = '';
+
+        allUsers.forEach(user => {
+            // Форматирование ролей как в вашем примере
+            const rolesDisplay = user.roles
+                ? user.roles.map(role => role.name.substring(5)).join(", ").replaceAll(",", " ")
+                : "Нет ролей";
+
+            // Создание бейджей ролей
+            const rolesBadges = user.roles
+                ? user.roles.map(role => {
+                    const roleName = role.name.substring(5);
+                    const roleClass = roleName.toUpperCase() === 'ADMIN' ? 'role-admin' : 'role-user';
+                    return `<span class="role-badge ${roleClass}">${roleName}</span>`;
+                }).join(' ')
+                : '<span class="text-muted">Нет ролей</span>';
+
+            // Случайный цвет для аватара
+            const avatarColor = getRandomColor();
+            const avatarInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+            usersTableHTML += `
+                <tr>
+                    <td>${user.id || 'N/A'}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="user-avatar-placeholder" style="width: 40px; height: 40px; background: ${avatarColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                ${avatarInitial}
+                            </div>
+                            <strong>${user.name || 'Не указано'}</strong>
+                        </div>
+                    </td>
+                    <td>${user.username || 'Не указано'}</td>
+                    <td>${user.age || 'Не указано'}</td>
+                    <td>
+                        <span class="text-muted">••••••••</span>
+                    </td>
+                    <td>${rolesBadges}</td>
+                    <td class="text-center">
+                        <div class="user-actions">
+                            <button class="btn btn-info btn-admin-sm" onclick="viewUser(${user.id})" title="Просмотр">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-admin-sm" onclick="showEditModal(${user.id})" title="Редактировать">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-admin-sm" onclick="showDeleteModal(${user.id})" title="Удалить">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = usersTableHTML;
+    }
+
+    // Функция обновления статистики
+    function updateStats() {
+        const totalUsers = allUsers.length;
+        const adminUsers = allUsers.filter(user =>
+            user.roles && user.roles.some(role => role.name.toUpperCase().includes('ADMIN'))
+        ).length;
+        const regularUsers = totalUsers - adminUsers;
+
+        document.getElementById('totalUsers').textContent = totalUsers;
+        document.getElementById('adminCount').textContent = adminUsers;
+        document.getElementById('userCount').textContent = regularUsers;
+    }
+
+    // Функция поиска пользователей
+    function searchUsers() {
+        const searchTerm = document.getElementById('searchUsers')?.value.toLowerCase() || '';
+
+        const filteredUsers = allUsers.filter(user => {
+            const name = (user.name || '').toLowerCase();
+            const username = (user.username || '').toLowerCase();
+            const roles = user.roles
+                ? user.roles.map(role => role.name.substring(5).toLowerCase()).join(' ')
+                : '';
+
+            return name.includes(searchTerm) ||
+                username.includes(searchTerm) ||
+                roles.includes(searchTerm);
+        });
+
+        // Временное отображение отфильтрованных пользователей
+        const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
+
+        if (filteredUsers.length === 0 && searchTerm) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center py-4">
+                        <i class="bi bi-search display-4 text-muted mb-3"></i>
+                        <p>Пользователи не найдены</p>
+                        <small class="text-muted">Попробуйте другой запрос</small>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let usersTableHTML = '';
+
+        (searchTerm ? filteredUsers : allUsers).forEach(user => {
+            const rolesBadges = user.roles
+                ? user.roles.map(role => {
+                    const roleName = role.name.substring(5);
+                    const roleClass = roleName.toUpperCase() === 'ADMIN' ? 'role-admin' : 'role-user';
+                    return `<span class="role-badge ${roleClass}">${roleName}</span>`;
+                }).join(' ')
+                : '<span class="text-muted">Нет ролей</span>';
+
+            const avatarColor = getRandomColor();
+            const avatarInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+            usersTableHTML += `
+                <tr>
+                    <td>${user.id || 'N/A'}</td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="user-avatar-placeholder" style="width: 40px; height: 40px; background: ${avatarColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+                                ${avatarInitial}
+                            </div>
+                            <strong>${user.name || 'Не указано'}</strong>
+                        </div>
+                    </td>
+                    <td>${user.username || 'Не указано'}</td>
+                    <td>${user.age || 'Не указано'}</td>
+                    <td>
+                        <span class="text-muted">••••••••</span>
+                    </td>
+                    <td>${rolesBadges}</td>
+                    <td class="text-center">
+                        <div class="user-actions">
+                            <button class="btn btn-info btn-admin-sm" onclick="viewUser(${user.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-admin-sm" onclick="showEditModal(${user.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-admin-sm" onclick="showDeleteModal(${user.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = usersTableHTML;
+    }
+
+    // Функция просмотра пользователя
+    async function viewUser(userId) {
+        const user = allUsers.find(u => u.id === userId);
+        if (!user) {
+            showNotification('Пользователь не найден', 'danger');
+            return;
+        }
+
+        // В реальном приложении можно открыть отдельную страницу или модальное окно
+        alert(`Просмотр пользователя:\nID: ${user.id}\nИмя: ${user.name}\nUsername: ${user.username}\nВозраст: ${user.age}\nРоли: ${user.roles ? user.roles.map(r => r.name.substring(5)).join(', ') : 'Нет ролей'}`);
+    }
+
+    // Функция показа модального окна добавления
+    function showAddModal() {
+        clearFormErrors('saveNewUser');
+        document.getElementById('saveNewUser').reset();
+        const modal = new bootstrap.Modal(document.getElementById('addUserModal'));
+        modal.show();
+    }
+
+    // Функция показа модального окна редактирования
+    async function showEditModal(userId) {
+        const user = allUsers.find(u => u.id === userId);
+        if (!user) {
+            showNotification('Пользователь не найдена', 'danger');
+            return;
+        }
+
+        clearFormErrors('formEditUser');
+
+        document.getElementById('editUserId').value = user.id;
+        document.getElementById('editName').value = user.name || '';
+        document.getElementById('editUsername').value = user.username || '';
+        document.getElementById('editAge').value = user.age || '';
+        document.getElementById('editPassword').value = '';
+
+        // Загружаем роли, если ещё не загружены
+        if (allRoles.length === 0) {
+            await loadRoles();
+        }
+
+        // Создаем мапинг ролей как в вашем коде
+        const rolesMapping = {};
+        allRoles.forEach(role => {
+            rolesMapping[role.name] = role.id;
+        });
+
+        // Очистка и установка ролей
+        const rolesSelect = document.getElementById('editRoles');
+        Array.from(rolesSelect.options).forEach(option => {
+            option.selected = false;
+        });
+
+        if (user.roles && Array.isArray(user.roles)) {
+            user.roles.forEach(role => {
+                const roleName = role.name; // Например "ROLE_ADMIN"
+                Array.from(rolesSelect.options).forEach(option => {
+                    if (option.value === roleName) {
+                        option.selected = true;
+                    }
+                });
+            });
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('editUserModal'));
+        modal.show();
+    }
+
+    // Функция показа модального окна удаления
+    function showDeleteModal(userId) {
+        const user = allUsers.find(u => u.id === userId);
+        if (!user) {
+            showNotification('Пользователь не найден', 'danger');
+            return;
+        }
+
+        document.getElementById('deleteUserId').value = user.id;
+        document.getElementById('deleteName').value = user.name || 'Не указано';
+        document.getElementById('deleteUsername').value = user.username || 'Не указано';
+        document.getElementById('deleteAge').value = user.age || 'Не указано';
+
+        // Очистка и установка ролей
+        const rolesSelect = document.getElementById('deleteRoles');
+        Array.from(rolesSelect.options).forEach(option => {
+            option.selected = false;
+        });
+
+        if (user.roles && Array.isArray(user.roles)) {
+            user.roles.forEach(role => {
+                const roleName = role.name; // Например "ROLE_ADMIN"
+                Array.from(rolesSelect.options).forEach(option => {
+                    if (option.value === roleName) {
+                        option.selected = true;
+                    }
+                });
+            });
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+        modal.show();
+    }
+
+    // Функция очистки ошибок формы
+    function clearFormErrors(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        const errorElements = form.querySelectorAll('.error-message');
+        errorElements.forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none';
+        });
+    }
+
+    // Вспомогательные функции
+    function getRandomColor() {
+        const colors = [
+            '#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'
+        ];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function showNotification(message, type = 'info') {
+        // Создаем уведомление
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alert.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        `;
+        alert.innerHTML = `
+            <strong>${type === 'success' ? '✅' : type === 'danger' ? '❌' : 'ℹ️'}</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(alert);
+
+        // Автоматическое закрытие через 5 секунд
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+
+    // Обработчики событий
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Загрузка пользователей и ролей при загрузке страницы
+        await Promise.all([loadUsers(), loadRoles()]);
+
+        // Поиск при вводе
+        const searchInput = document.getElementById('searchUsers');
+        if (searchInput) {
+            searchInput.addEventListener('input', searchUsers);
+        }
+
+        // Обработка формы добавления пользователя (аналогично вашему addNewUserForm)
+        const addForm = document.getElementById('saveNewUser');
+        if (addForm) {
+            addForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const name = document.getElementById('nameNew').value.trim();
+                const username = document.getElementById('usernameNew').value.trim();
+                const age = document.getElementById('ageNew').value.trim();
+                const password = document.getElementById('passwordNew').value.trim();
+                const rolesSelected = document.getElementById('rolesNew');
+
+                // Создаем мапинг ролей как в вашем коде
+                const rolesMapping = {};
+                allRoles.forEach(role => {
+                    rolesMapping[role.name] = role.id;
+                });
+
+                // Формируем массив ролей как в вашем коде
+                const roles = [];
+                for (let option of rolesSelected.selectedOptions) {
+                    if (Object.keys(rolesMapping).indexOf(option.value) !== -1) {
+                        roles.push({roleId: rolesMapping[option.value], name: option.value});
+                    }
+                }
+
+                const newUserData = {
+                    name: name,
+                    username: username,
+                    age: age,
+                    password: password,
+                    roles: roles
+                };
+
+                try {
+                    const response = await fetch('/api/admin/users/', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(newUserData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw errorData;
+                    }
+
+                    showNotification('Пользователь успешно добавлен', 'success');
+
+                    // Закрываем модальное окно
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+                    modal.hide();
+
+                    // Очищаем форму
+                    addForm.reset();
+
+                    // Перезагружаем пользователей
+                    await loadUsers();
+
+                } catch (errorData) {
+                    // Отображаем ошибки валидации как в вашем коде
+                    if (errorData.errors) {
+                        displayValidationErrors(errorData.errors);
+                    } else {
+                        showNotification('Ошибка добавления пользователя', 'danger');
+                    }
+                }
+            });
+        }
+
+        // Обработка формы редактирования пользователя (аналогично вашему EditModalHandler)
+        const editForm = document.getElementById('formEditUser');
+        if (editForm) {
+            editForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const userId = document.getElementById('editUserId').value;
+                const rolesSelected = document.getElementById('editRoles');
+
+                // Создаем мапинг ролей как в вашем коде
+                const rolesMapping = {};
+                allRoles.forEach(role => {
+                    rolesMapping[role.name] = role.id;
+                });
+
+                // Формируем массив ролей как в вашем коде
+                const roles = [];
+                for (let option of rolesSelected.selectedOptions) {
+                    if (Object.keys(rolesMapping).indexOf(option.value) !== -1) {
+                        roles.push({roleId: rolesMapping[option.value], name: option.value});
+                    }
+                }
+
+                const userData = {
+                    id: userId,
+                    name: document.getElementById('editName').value.trim(),
+                    username: document.getElementById('editUsername').value.trim(),
+                    age: document.getElementById('editAge').value.trim(),
+                    password: document.getElementById('editPassword').value.trim(),
+                    roles: roles
+                };
+
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(userData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw errorData;
+                    }
+
+                    showNotification('Пользователь успешно обновлён', 'success');
+
+                    // Закрываем модальное окно
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editUserModal'));
+                    modal.hide();
+
+                    // Очищаем форму
+                    editForm.reset();
+
+                    // Перезагружаем пользователей
+                    await loadUsers();
+
+                } catch (errorData) {
+                    // Отображаем ошибки валидации как в вашем коде
+                    if (errorData.errors) {
+                        displayValidationErrorsForModal(errorData.errors);
+                    } else {
+                        showNotification('Ошибка обновления пользователя', 'danger');
+                    }
+                }
+            });
+        }
+
+        // Обработка формы удаления пользователя
+        const deleteForm = document.getElementById('formDeleteUser');
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const userId = document.getElementById('deleteUserId').value;
+
+                if (!confirm('Вы уверены, что хотите удалить этого пользователя?')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/api/admin/users/${userId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showNotification('Пользователь успешно удалён', 'success');
+
+                        // Закрываем модальное окно
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteUserModal'));
+                        modal.hide();
+
+                        // Перезагружаем пользователей
+                        await loadUsers();
+                    } else {
+                        const error = await response.json();
+                        showNotification(error.message || 'Ошибка удаления пользователя', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    showNotification('Ошибка соединения с сервером', 'danger');
+                }
+            });
+        }
+    });
+
+    // Функции для отображения ошибок валидации (как в вашем коде)
+    function displayValidationErrors(errors) {
+        document.getElementById('nameError').textContent = errors.name || '';
+        document.getElementById('usernameError').textContent = errors.username || '';
+        document.getElementById('ageError').textContent = errors.age || '';
+        document.getElementById('passwordError').textContent = errors.password || '';
+    }
+
+    function displayValidationErrorsForModal(errors) {
+        document.getElementById('nameEditError').textContent = errors.name || '';
+        document.getElementById('usernameEditError').textContent = errors.username || '';
+        document.getElementById('ageEditError').textContent = errors.age || '';
+        document.getElementById('passwordEditError').textContent = errors.password || '';
+    }
+</script>
+
 </body>
 </html>
