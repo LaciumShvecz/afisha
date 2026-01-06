@@ -28,14 +28,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/",
                         "/index",
-                        "/concert",
+                        "/concert/**",
                         "/ticket",
                         "/scripts/**",
                         "/images/**",
                         "/**/*.css",
                         "/**/*.js",
-                        "/login",          // Добавляем страницу логина
-                        "/login-error",    // Добавляем страницу ошибки логина (опционально)
+                        "/login",
                         "/register"
                 ).permitAll()
                 .antMatchers("/api/admin/**", "/admin-concerts", "/admin-dashboard").hasRole("ADMIN")
@@ -43,14 +42,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()
-                .loginPage("/login")              // Указываем кастомную страницу логина
-                .loginProcessingUrl("/login")     // URL для обработки формы логина
-                .successHandler(successUserHandler) // Ваш кастомный обработчик успешного логина
-                .failureUrl("/login?error=true")  // URL при ошибке логина
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .successHandler(successUserHandler)
+                .failureUrl("/login?error=true")
                 .permitAll()
                 .and()
                 .logout()
-                .logoutUrl("/logout")            // URL для выхода
+                .logoutUrl("/logout")
                 .logoutSuccessUrl("/index")
                 .permitAll()
                 .and()

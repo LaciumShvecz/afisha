@@ -16,10 +16,10 @@ public class RestViewController {
         return "user";
     }
 
-    @GetMapping("/index")
+    /*@GetMapping("/index")
     public String showIndex() {
         return "index";
-    }
+    }*/
 
     @GetMapping("/concert")
     public String showConcert() {

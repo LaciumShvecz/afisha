@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Концерт — Imagine Dragons</title>
+    <title th:text="${concert.title} + ' — AFISHA'"></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap -->
@@ -135,7 +135,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="index">AFISHA</a>
+        <a class="navbar-brand" th:href="@{/}">AFISHA</a>
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="ms-auto d-flex align-items-center gap-3">
@@ -168,14 +168,19 @@
 
 <div class="container">
 
+
     <!-- Hero / Фото концерта -->
-    <section class="event-header">
-        <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg" alt="Imagine Dragons">
+    <section class="event-header" th:if="${concert.imageUrl != null}">
+        <img th:src="${concert.imageUrl}">
         <div class="overlay">
-            <h1 class="display-5 fw-bold">Imagine Dragons Live</h1>
+            <h1 class="display-5 fw-bold" th:text="${concert.title}"></h1>
             <p class="lead">
-                <i class="bi bi-geo-alt"></i> Минск-Арена •
-                <i class="bi bi-calendar"></i> 12 февраля
+                <i class="bi bi-person-badge"></i>
+                <span th:text="${concert.artist}"></span> •
+                <i class="bi bi-geo-alt"></i>
+                <span th:text="${concert.city}"></span> •
+                <i class="bi bi-calendar"></i>
+                <span th:text="${formattedDate}"></span>
             </p>
         </div>
     </section>
@@ -183,34 +188,70 @@
     <div class="row g-4">
         <!-- Левая колонка с информацией -->
         <div class="col-lg-8">
-            <div class="info-card">
+            <div class="info-card" th:if="${concert.description != null}">
                 <h3 class="section-title">Описание концерта</h3>
-                <p>
-                    Концерт Imagine Dragons в Минск-Арене — это грандиозное шоу с лучшими хитами группы,
-                    живой оркестр и невероятная визуальная постановка. Приготовьтесь к незабываемому вечеру музыки!
-                </p>
+                <p th:text="${concert.description}"></p>
             </div>
 
             <div class="row g-3">
                 <div class="col-md-6">
                     <div class="info-card h-100">
                         <h5><i class="bi bi-calendar-event text-primary me-2"></i>Дата и время</h5>
-                        <p>12 февраля 2026 года, 19:00</p>
+                        <p>
+                            <span th:text="${formattedDate}"></span>,
+                            <span th:text="${formattedTime}"></span>
+                        </p>
                     </div>
                 </div>
 
                 <div class="col-md-6">
                     <div class="info-card h-100">
                         <h5><i class="bi bi-geo-alt text-primary me-2"></i>Место проведения</h5>
-                        <p>Минск-Арена, пр. Победителей, 111, Минск</p>
+                        <p>
+                            <span th:text="${concert.venueName}"></span>,
+                            <span th:text="${concert.venueAddress}"></span>,
+                            <span th:text="${concert.city}"></span>
+                        </p>
                     </div>
                 </div>
 
+                <!-- Информация о билетах и доступных местах -->
                 <div class="col-md-12">
                     <div class="info-card">
-                        <h5><i class="bi bi-ticket-perforated text-primary me-2"></i>Цена билетов</h5>
-                        <p class="price-tag mb-2">от 50 BYN</p>
-                        <p class="small">*Цены могут меняться в зависимости от выбранного места и категории</p>
+                        <div class="row">
+                            <!-- Левая часть: цена и информация -->
+                            <div class="col-md-6">
+                                <h5><i class="bi bi-ticket-perforated text-primary me-2"></i>Цена билетов</h5>
+                                <p class="price-tag mb-2"
+                                   th:text="${concert.price} + ' ' + ${concert.currency}">
+                                </p>
+                                <p class="small" th:if="${concert.additionalInfo != null}"
+                                   th:text="${concert.additionalInfo}">
+                                </p>
+                            </div>
+
+                            <!-- Правая часть: доступные билеты -->
+                            <div class="col-md-6" th:if="${concert.availableTickets != null}">
+                                <h5><i class="bi bi-ticket-detailed text-primary me-2"></i>Продано билетов</h5>
+                                <div class="d-flex align-items-center mb-2">
+                                    <p class="mb-0 me-3"
+                                       th:text="${concert.availableTickets} + ' из ' + ${concert.totalTickets}">
+                                    </p>
+                                    <!-- Маленький прогресс-бар рядом с текстом -->
+                                    <div class="flex-grow-1" style="max-width: 150px;">
+                                        <div class="progress" style="height: 8px;"
+                                             th:if="${concert.totalTickets != null and concert.totalTickets > 0}">
+                                            <div class="progress-bar bg-success"
+                                                 role="progressbar"
+                                                 th:style="'width: ' + ${(concert.totalTickets - concert.availableTickets) * 100 / concert.totalTickets} + '%;'"
+                                                 th:attr="aria-valuenow=${(concert.totalTickets - concert.availableTickets) * 100 / concert.totalTickets}"
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -219,10 +260,21 @@
         <!-- Правая колонка с покупкой билетов -->
         <div class="col-lg-4">
             <div class="ticket-card">
-                <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg" class="card-img-top" alt="Imagine Dragons">
+                <img th:src="${concert.imageUrl}"
+                     class="card-img-top"
+                     th:alt="${concert.title}">
                 <div class="card-body text-center">
+                    <h5 class="card-title" th:text="${concert.title}"></h5>
+                    <p class="card-text">
+                        <small class="text-muted">
+                            <i class="bi bi-person"></i>
+                            <span th:text="${concert.artist}"></span>
+                        </small>
+                    </p>
+
                     <div class="d-grid gap-2">
-                        <a href="#" class="btn btn-primary btn-lg">
+                        <a th:href="@{'/ticket/' + ${concert.id}}"
+                           class="btn btn-primary btn-lg">
                             <i class="bi bi-cart3 me-2"></i>Купить билет
                         </a>
                     </div>
@@ -232,8 +284,19 @@
                     <div class="text-start">
                         <h6><i class="bi bi-info-circle me-2"></i>Информация:</h6>
                         <ul class="list-unstyled small">
-                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Электронные билеты</li>
-                            <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Возврат возможен</li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Электронные билеты
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-check-circle text-success me-2"></i>
+                                Возврат возможен
+                            </li>
+                            <li th:if="${concert.availableTickets != null and concert.availableTickets < 10}"
+                                class="mb-2">
+                                <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+                                Осталось мало билетов!
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -246,7 +309,7 @@
 <footer class="py-4 mt-5">
     <div class="container text-center">
         <div class="mb-2">
-            <a href="index" class="me-3">Главная</a>
+            <a th:href="@{/}" class="me-3">Главная</a>
             <a href="#" class="me-3">Контакты</a>
             <a href="#">Помощь</a>
         </div>

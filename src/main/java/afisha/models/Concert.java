@@ -1,9 +1,9 @@
 package afisha.models;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import javax.validation.constraints.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "concerts")
@@ -13,47 +13,192 @@ public class Concert {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "Название концерта не может быть пустым")
-    @Column(nullable = false, length = 100)
+    @NotBlank(message = "Название концерта обязательно")
+    @Size(min = 3, max = 200, message = "Название должно быть от 3 до 200 символов")
     private String title;
 
-    @NotNull(message = "Дата концерта не может быть пустой")
-    @Column(nullable = false)
-    private LocalDate date;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    @NotEmpty(message = "Место проведения не может быть пустым")
-    @Column(nullable = false, length = 100)
-    private String location;
+    @NotBlank(message = "Исполнитель обязателен")
+    @Size(min = 2, max = 100, message = "Исполнитель должен быть от 2 до 100 символов")
+    private String artist;
 
-    @NotNull(message = "Цена не может быть пустой")
-    @Column(nullable = false)
-    private Double price;
+    @NotNull(message = "Дата и время обязательны")
+    @Future(message = "Дата концерта должна быть в будущем")
+    private LocalDateTime concertDateTime;
 
-    @Column(length = 255)
-    private String image;
+    @NotBlank(message = "Название места проведения обязательно")
+    @Size(min = 2, max = 150, message = "Название места должно быть от 2 до 150 символов")
+    private String venueName;
 
+    @NotBlank(message = "Адрес обязателен")
+    @Size(min = 5, max = 200, message = "Адрес должен быть от 5 до 200 символов")
+    private String venueAddress;
+
+    @NotBlank(message = "Город обязателен")
+    @Size(min = 2, max = 50, message = "Город должен быть от 2 до 50 символов")
+    private String city;
+
+    @NotNull(message = "Минимальная цена обязательна")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Цена должна быть больше 0")
+    private BigDecimal price;
+
+    private String currency = "BYN"; // По умолчанию белорусские рубли
+
+    @Column(length = 1000)
+    private String additionalInfo;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
+    @Column(name = "is_featured")
+    private boolean featured = false;
+
+    @Column(name = "available_tickets")
+    private Integer availableTickets;
+
+    @Column(name = "total_tickets")
+    private Integer totalTickets;
+
+    // Конструкторы
     public Concert() {
     }
 
-    public Concert(String title, LocalDate date, String location, Double price, String image) {
+    public Concert(String title, String artist, LocalDateTime concertDateTime,
+                   String venueName, String venueAddress, BigDecimal price) {
         this.title = title;
-        this.date = date;
-        this.location = location;
+        this.artist = artist;
+        this.concertDateTime = concertDateTime;
+        this.venueName = venueName;
+        this.venueAddress = venueAddress;
         this.price = price;
-        this.image = image;
     }
 
-    // Геттеры и сеттеры
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
-    public LocalDate getDate() { return date; }
-    public void setDate(LocalDate date) { this.date = date; }
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-    public Double getPrice() { return price; }
-    public void setPrice(Double price) { this.price = price; }
-    public String getImage() { return image; }
-    public void setImage(String image) { this.image = image; }
+    // Вспомогательные методы
+    public String getFormattedDateTime() {
+        // Форматированная дата для отображения
+        return concertDateTime != null ?
+                concertDateTime.toString() : ""; // Можно использовать DateTimeFormatter
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public LocalDateTime getConcertDateTime() {
+        return concertDateTime;
+    }
+
+    public void setConcertDateTime(LocalDateTime concertDateTime) {
+        this.concertDateTime = concertDateTime;
+    }
+
+    public String getVenueName() {
+        return venueName;
+    }
+
+    public void setVenueName(String venueName) {
+        this.venueName = venueName;
+    }
+
+    public String getVenueAddress() {
+        return venueAddress;
+    }
+
+    public void setVenueAddress(String venueAddress) {
+        this.venueAddress = venueAddress;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
+    public void setAdditionalInfo(String additionalInfo) {
+        this.additionalInfo = additionalInfo;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isFeatured() {
+        return featured;
+    }
+
+    public void setFeatured(boolean featured) {
+        this.featured = featured;
+    }
+
+    public Integer getAvailableTickets() {
+        return availableTickets;
+    }
+
+    public void setAvailableTickets(Integer availableTickets) {
+        this.availableTickets = availableTickets;
+    }
+
+    public Integer getTotalTickets() {
+        return totalTickets;
+    }
+
+    public void setTotalTickets(Integer totalTickets) {
+        this.totalTickets = totalTickets;
+    }
 }

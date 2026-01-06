@@ -61,37 +61,51 @@
         .info-card {
             height: 100%;
             transition: transform .3s ease;
-            border-radius: var(--bs-border-radius) !important; /* Добавлено */
-            overflow: hidden; /* Чтобы изображение соответствовало скруглению */
+            border-radius: var(--bs-border-radius) !important;
+            overflow: hidden;
+            border: var(--border) solid var(--bs-border-color);
+            background: var(--color-base-200);
         }
 
         .info-card:hover {
             transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
 
         .info-card img {
             height: 200px;
+            width: 100%;
             object-fit: cover;
-            border-top-left-radius: var(--bs-border-radius) !important; /* Исправлено */
-            border-top-right-radius: var(--bs-border-radius) !important; /* Исправлено */
-            border-bottom-left-radius: 0 !important;
-            border-bottom-right-radius: 0 !important;
-        }
-
-        /* Убираем стандартное скругление карточки Bootstrap если нужно */
-        .info-card.card {
-            border-radius: var(--bs-border-radius) !important;
+            border-top-left-radius: var(--bs-border-radius) !important;
+            border-top-right-radius: var(--bs-border-radius) !important;
         }
 
         .price {
             font-size: 1.1rem;
             font-weight: 700;
+            color: var(--color-success);
         }
 
-        /* Добавляем для полной консистентности с темой */
-        .info-card .card-body {
-            border-bottom-left-radius: calc(var(--bs-border-radius) - 1px);
-            border-bottom-right-radius: calc(var(--bs-border-radius) - 1px);
+        .concert-date {
+            color: var(--color-base-content);
+            opacity: 0.8;
+        }
+
+        .concert-venue {
+            color: var(--color-base-content);
+            opacity: 0.6;
+        }
+
+        .no-concerts {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--color-base-content);
+        }
+
+        .no-concerts i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--color-base-300);
         }
     </style>
 </head>
@@ -100,7 +114,7 @@
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="index">AFISHA</a>
+        <a class="navbar-brand" th:href="@{/}">AFISHA</a>
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="ms-auto d-flex align-items-center gap-3">
@@ -132,76 +146,76 @@
 </nav>
 
 <!-- HERO -->
-<div class="container">
-    <section class="hero"></section>
+<div class="container" th:if="${not #lists.isEmpty(concerts)}">
+    <section class="hero" id="heroSection">Баннер</section>
 </div>
 
 <!-- EVENTS -->
 <div class="container my-5">
-    <div class="row g-4">
 
-        <!-- CARD -->
-        <div class="col-md-4">
-            <div class="card info-card shadow-sm"><img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Imagine_Dragons_-_Uncasville_CT_-_November_2017_-_2.jpg/330px-Imagine_Dragons_-_Uncasville_CT_-_November_2017_-_2.jpg"
-                    class="card-img-top" alt="Концерт 1">
-                <div class="card-body"><h5 class="card-title">Imagine Dragons Live</h5>
-                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 12 февраля</p>
-                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Минск-Арена</p>
-                    <div class="d-flex justify-content-between align-items-center"><span
-                            class="fw-bold">от 50 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+    <!-- Заголовок с количеством концертов -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="text-primary">Предстоящие мероприятия</h1>
+        <h3 th:text="${concerts != null ? concerts.size() : 0}">0</h3>
+    </div>
+
+    <div th:if="${#lists.isEmpty(concerts)}" class="no-concerts">
+        <i class="bi bi-calendar-x"></i>
+        <h4 class="bs-body-color">Нет предстоящих концертов</h4>
+        <p class="text-primary">Скоро здесь появятся новые мероприятия</p>
+    </div>
+
+    <div class="row g-4" th:if="${not #lists.isEmpty(concerts)}">
+
+        <!-- Карточка концерта (динамическая) -->
+        <div class="col-md-4" th:each="concert : ${concerts}">
+            <div class="card info-card shadow-sm">
+                <img th:src="${concert.imageUrl != null ? concert.imageUrl : 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'}"
+                     class="card-img-top"
+                     th:alt="${concert.title}">
+                <div class="card-body">
+                    <h5 class="card-title" th:text="${concert.title}">Название концерта</h5>
+
+                    <!-- Исполнитель -->
+                    <p class="text-primary mb-1" th:if="${concert.artist != null}">
+                        <i class="bi bi-person"></i>
+                        <span th:text="${concert.artist}">Исполнитель</span>
+                    </p>
+
+                    <!-- Дата -->
+                    <p class="concert-date mb-1" th:if="${concert.concertDateTime != null}">
+                        <i class="bi bi-calendar"></i>
+                        <span th:text="${#temporals.format(concert.concertDateTime, 'd MMMM yyyy')} + ', ' + ${#temporals.format(concert.concertDateTime, 'HH:mm')}">дата</span>
+                    </p>
+
+                    <!-- Место -->
+                    <p class="concert-venue mb-3" th:if="${concert.venueName != null}">
+                        <i class="bi bi-geo-alt"></i>
+                        <span th:text="${concert.venueName}">место</span>
+                        <span th:if="${concert.city != null}" th:text="', ' + ${concert.city}"></span>
+                    </p>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <!-- Цена -->
+                        <span class="price" th:if="${concert.price != null}">
+                            <span th:text="'от ' + ${concert.price} + ' ' + ${concert.currency}">от 50 BYN</span>
+                        </span>
+
+                        <!-- Ссылка "Подробнее" -->
+                        <a th:href="@{'/concert/' + ${concert.id}}"
+                           class="btn btn-sm btn-primary">
+                            Подробнее
+                        </a>
                     </div>
-                </div>
-            </div>
-        </div> <!-- Карточка 2 -->
-        <div class="col-md-4">
-            <div class="card info-card shadow-sm"><img
-                    src="https://www.billboard.com/wp-content/uploads/2022/01/Skillet-cr-Jimmy-Fontaine-press-2022-billboard-1548.jpg"
-                    class="card-img-top" alt="Концерт 2">
-                <div class="card-body"><h5 class="card-title">Рок-концерт The Skillet</h5>
-                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 20 февраля</p>
-                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Palace of Sports</p>
-                    <div class="d-flex justify-content-between align-items-center"><span
-                            class="fw-bold">от 60 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- Карточка 3 -->
-        <div class="col-md-4">
-            <div class="card info-card shadow-sm"><img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShcEkMwKzIU-2ttARieH0AdSvmy4skPmk3LQ&s"
-                    class="card-img-top" alt="Концерт 3">
-                <div class="card-body"><h5 class="card-title">Cимфонический оркестр Imperial Orchestra</h5>
-                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 28 февраля</p>
-                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Большой театр</p>
-                    <div class="d-flex justify-content-between align-items-center"><span
-                            class="fw-bold">от 40 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- Карточка 4 -->
-        <div class="col-md-4">
-            <div class="card info-card shadow-sm"><img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQALinpRACODi7uAfvzd1T6DLs02FKRzVCBIg&s"
-                    class="card-img-top" alt="Концерт 4">
-                <div class="card-body"><h5 class="card-title">Фестиваль электронной музыки</h5>
-                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 5 марта</p>
-                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Минск Экспо</p>
-                    <div class="d-flex justify-content-between align-items-center"><span
-                            class="fw-bold">от 70 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
-                    </div>
-                </div>
-            </div>
-        </div> <!-- Карточка 5 -->
-        <div class="col-md-4">
-            <div class="card info-card shadow-sm"><img
-                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwOBhcHT5sykTP5GWh4vkYrMpOv1bnKJ0faA&s"
-                    class="card-img-top" alt="Концерт 5">
-                <div class="card-body"><h5 class="card-title">Jazz Night</h5>
-                    <p class="card-text text-secondary mb-1"><i class="bi bi-calendar"></i> 12 марта</p>
-                    <p class="card-text text-secondary"><i class="bi bi-geo-alt"></i> Клуб "Jazz Hall"</p>
-                    <div class="d-flex justify-content-between align-items-center"><span
-                            class="fw-bold">от 35 BYN</span> <a href="#" class="btn btn-sm btn-primary">Подробнее</a>
+
+                    <!-- Дополнительные индикаторы -->
+                    <div class="mt-2 d-flex gap-2">
+
+                        <!-- Мало билетов -->
+                        <span th:if="${concert.availableTickets != null and concert.availableTickets < 10}"
+                              class="badge bg-danger">
+                            <i class="bi bi-exclamation-triangle me-1"></i>Мало билетов
+                        </span>
                     </div>
                 </div>
             </div>
@@ -214,7 +228,7 @@
 <footer class="py-4 mt-5">
     <div class="container text-center">
         <div class="mb-2">
-            <a href="#" class="me-3">Главная</a>
+            <a th:href="@{/}" class="me-3">Главная</a>
             <a href="#" class="me-3">Контакты</a>
             <a href="#">Помощь</a>
         </div>
@@ -224,6 +238,7 @@
 
 <!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 
 <script>
     const hero = document.querySelector('.hero');

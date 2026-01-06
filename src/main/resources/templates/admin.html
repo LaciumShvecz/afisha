@@ -114,12 +114,6 @@
                         Пользователи
                     </a>
                 </div>
-                <div class="nav-item">
-                    <a class="nav-link" href="/admin/venues">
-                        <i class="bi bi-geo-alt"></i>
-                        Места проведения
-                    </a>
-                </div>
             </div>
         </nav>
 
@@ -161,8 +155,7 @@
                                 <th>ID</th>
                                 <th>Имя</th>
                                 <th>Username</th>
-                                <th>Возраст</th>
-                                <th>Пароль</th>
+                                <th>Email</th>
                                 <th>Роли</th>
                                 <th class="text-center">Действия</th>
                             </tr>
@@ -207,9 +200,9 @@
                         <div class="error-message" id="usernameError"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="ageNew" class="form-label">Возраст</label>
-                        <input type="number" class="form-control" id="ageNew" name="age" placeholder="Возраст" required>
-                        <div class="error-message" id="ageError"></div>
+                        <label for="emailNew" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="emailNew" name="email" placeholder="Email" required>
+                        <div class="error-message" id="emailError"></div>
                     </div>
                     <div class="mb-3">
                         <label for="passwordNew" class="form-label">Пароль</label>
@@ -255,9 +248,9 @@
                         <div class="error-message" id="usernameEditError"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="editAge" class="form-label">Возраст</label>
-                        <input type="number" class="form-control" id="editAge" name="age" required>
-                        <div class="error-message" id="ageEditError"></div>
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" name="email" required>
+                        <div class="error-message" id="emailEditError"></div>
                     </div>
                     <div class="mb-3">
                         <label for="editPassword" class="form-label">Пароль (оставьте пустым, если не хотите менять)</label>
@@ -301,8 +294,8 @@
                         <input type="text" class="form-control" id="deleteUsername" readonly>
                     </div>
                     <div class="mb-3">
-                        <label for="deleteAge" class="form-label">Возраст</label>
-                        <input type="text" class="form-control" id="deleteAge" readonly>
+                        <label for="deleteEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="deleteEmail" readonly>
                     </div>
                     <div class="mb-3">
                         <label for="deleteRoles" class="form-label">Роли</label>
@@ -416,26 +409,16 @@
                 }).join(' ')
                 : '<span class="text-muted">Нет ролей</span>';
 
-            // Случайный цвет для аватара
-            const avatarColor = getRandomColor();
-            const avatarInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-
             usersTableHTML += `
                 <tr>
                     <td>${user.id || 'N/A'}</td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
-                            <div class="user-avatar-placeholder" style="width: 40px; height: 40px; background: ${avatarColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                ${avatarInitial}
-                            </div>
                             <strong>${user.name || 'Не указано'}</strong>
                         </div>
                     </td>
                     <td>${user.username || 'Не указано'}</td>
-                    <td>${user.age || 'Не указано'}</td>
-                    <td>
-                        <span class="text-muted">••••••••</span>
-                    </td>
+                    <td>${user.email || 'Не указано'}</td>
                     <td>${rolesBadges}</td>
                     <td class="text-center">
                         <div class="user-actions">
@@ -514,25 +497,17 @@
                 }).join(' ')
                 : '<span class="text-muted">Нет ролей</span>';
 
-            const avatarColor = getRandomColor();
-            const avatarInitial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
 
             usersTableHTML += `
                 <tr>
                     <td>${user.id || 'N/A'}</td>
                     <td>
                         <div class="d-flex align-items-center gap-2">
-                            <div class="user-avatar-placeholder" style="width: 40px; height: 40px; background: ${avatarColor}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
-                                ${avatarInitial}
-                            </div>
                             <strong>${user.name || 'Не указано'}</strong>
                         </div>
                     </td>
                     <td>${user.username || 'Не указано'}</td>
-                    <td>${user.age || 'Не указано'}</td>
-                    <td>
-                        <span class="text-muted">••••••••</span>
-                    </td>
+                    <td>${user.email || 'Не указано'}</td>
                     <td>${rolesBadges}</td>
                     <td class="text-center">
                         <div class="user-actions">
@@ -563,7 +538,7 @@
         }
 
         // В реальном приложении можно открыть отдельную страницу или модальное окно
-        alert(`Просмотр пользователя:\nID: ${user.id}\nИмя: ${user.name}\nUsername: ${user.username}\nВозраст: ${user.age}\nРоли: ${user.roles ? user.roles.map(r => r.name.substring(5)).join(', ') : 'Нет ролей'}`);
+        alert(`Просмотр пользователя:\nID: ${user.id}\nИмя: ${user.name}\nUsername: ${user.username}\nEmail: ${user.email}\nРоли: ${user.roles ? user.roles.map(r => r.name.substring(5)).join(', ') : 'Нет ролей'}`);
     }
 
     // Функция показа модального окна добавления
@@ -587,7 +562,7 @@
         document.getElementById('editUserId').value = user.id;
         document.getElementById('editName').value = user.name || '';
         document.getElementById('editUsername').value = user.username || '';
-        document.getElementById('editAge').value = user.age || '';
+        document.getElementById('editEmail').value = user.email || '';
         document.getElementById('editPassword').value = '';
 
         // Загружаем роли, если ещё не загружены
@@ -633,7 +608,7 @@
         document.getElementById('deleteUserId').value = user.id;
         document.getElementById('deleteName').value = user.name || 'Не указано';
         document.getElementById('deleteUsername').value = user.username || 'Не указано';
-        document.getElementById('deleteAge').value = user.age || 'Не указано';
+        document.getElementById('deleteEmail').value = user.email || 'Не указано';
 
         // Очистка и установка ролей
         const rolesSelect = document.getElementById('deleteRoles');
@@ -720,7 +695,7 @@
 
                 const name = document.getElementById('nameNew').value.trim();
                 const username = document.getElementById('usernameNew').value.trim();
-                const age = document.getElementById('ageNew').value.trim();
+                const email = document.getElementById('emailNew').value.trim();
                 const password = document.getElementById('passwordNew').value.trim();
                 const rolesSelected = document.getElementById('rolesNew');
 
@@ -741,7 +716,7 @@
                 const newUserData = {
                     name: name,
                     username: username,
-                    age: age,
+                    email: email,
                     password: password,
                     roles: roles
                 };
@@ -808,7 +783,7 @@
                     id: userId,
                     name: document.getElementById('editName').value.trim(),
                     username: document.getElementById('editUsername').value.trim(),
-                    age: document.getElementById('editAge').value.trim(),
+                    email: document.getElementById('editEmail').value.trim(),
                     password: document.getElementById('editPassword').value.trim(),
                     roles: roles
                 };
@@ -890,14 +865,14 @@
     function displayValidationErrors(errors) {
         document.getElementById('nameError').textContent = errors.name || '';
         document.getElementById('usernameError').textContent = errors.username || '';
-        document.getElementById('ageError').textContent = errors.age || '';
+        document.getElementById('emailError').textContent = errors.email || '';
         document.getElementById('passwordError').textContent = errors.password || '';
     }
 
     function displayValidationErrorsForModal(errors) {
         document.getElementById('nameEditError').textContent = errors.name || '';
         document.getElementById('usernameEditError').textContent = errors.username || '';
-        document.getElementById('ageEditError').textContent = errors.age || '';
+        document.getElementById('emailEditError').textContent = errors.email || '';
         document.getElementById('passwordEditError').textContent = errors.password || '';
     }
 </script>
