@@ -4,10 +4,10 @@ import afisha.models.Concert;
 import afisha.repositories.ConcertRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ConcertService {
@@ -19,16 +19,8 @@ public class ConcertService {
         return concertRepository.findAll();
     }
 
-    public Optional<Concert> getConcertById(Long id) {
-        return concertRepository.findById(id);
-    }
-
-    public Concert saveConcert(Concert concert) {
-        return concertRepository.save(concert);
-    }
-
-    public void deleteConcert(Long id) {
-        concertRepository.deleteById(id);
+    public Concert getConcertById(Long id) {
+        return concertRepository.findById(id).orElse(null);
     }
 
     public List<Concert> getUpcomingConcerts() {
@@ -40,18 +32,49 @@ public class ConcertService {
     }
 
     public List<Concert> searchConcerts(String query) {
-        List<Concert> byArtist = concertRepository.findByArtistContainingIgnoreCase(query);
-        List<Concert> byTitle = concertRepository.findByTitleContainingIgnoreCase(query);
-
-        // Объединяем результаты, исключая дубликаты
-        byArtist.addAll(byTitle.stream()
-                .filter(concert -> !byArtist.contains(concert))
-                .toList());
-
-        return byArtist;
+        return concertRepository.searchConcerts(query);
     }
 
-    public List<Concert> getConcertsByCity(String city) {
-        return concertRepository.findByCity(city);
+    @Transactional
+    public void updateAvailableTickets(Long concertId, int quantityChange) {
+        Concert concert = getConcertById(concertId);
+        if (concert != null && concert.getAvailableTickets() != null) {
+            int newAvailable = concert.getAvailableTickets() + quantityChange;
+            concert.setAvailableTickets(Math.max(newAvailable, 0));
+            concertRepository.save(concert);
+        }
+    }
+
+    @Transactional
+    public Concert saveConcert(Concert concert) {
+        return concertRepository.save(concert);
+    }
+
+    @Transactional
+    public void deleteConcert(Long id) {
+        concertRepository.deleteById(id);
+    }
+
+    // Метод для проверки доступности билетов
+    public boolean checkTicketsAvailability(Long concertId, int requestedTickets) {
+        Concert concert = getConcertById(concertId);
+        if (concert == null || concert.getAvailableTickets() == null) {
+            return false;
+        }
+        return concert.getAvailableTickets() >= requestedTickets;
+    }
+
+    // Метод для резервирования билетов (можно использовать для атомарных операций)
+    @Transactional
+    public synchronized boolean reserveTickets(Long concertId, int tickets) {
+        Concert concert = getConcertById(concertId);
+        if (concert != null && concert.getAvailableTickets() != null) {
+            if (concert.getAvailableTickets() >= tickets) {
+                concert.setAvailableTickets(concert.getAvailableTickets() - tickets);
+                concertRepository.save(concert);
+                return true;
+            }
+        }
+        return false;
     }
 }

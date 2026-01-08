@@ -48,7 +48,7 @@ public class AdminController {
             return ResponseEntity.badRequest().body(errors);
         }
 
-        userService.createUser(user);
+        userService.saveUser(user);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 

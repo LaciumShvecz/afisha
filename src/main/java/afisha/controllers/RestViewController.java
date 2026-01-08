@@ -11,10 +11,10 @@ public class RestViewController {
         return "admin";
     }
 
-    @GetMapping("/user")
+    /*@GetMapping("/user")
     public String showUser() {
         return "user";
-    }
+    }*/
 
     /*@GetMapping("/index")
     public String showIndex() {

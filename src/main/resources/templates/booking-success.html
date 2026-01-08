@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Бронирование подтверждено — AFISHA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        .success-header {
+            background: var(--color-base-200);
+            color: var(--color-base-content);
+            padding: 3rem 0;
+            text-align: center;
+            border-bottom: var(--border) solid var(--bs-border-color);
+            margin-bottom: 2rem;
+        }
+
+        .success-header h1 {
+            color: var(--color-success);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .success-card {
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .success-card .card-header {
+            background: var(--color-success);
+            color: var(--color-success-content);
+            padding: 1.5rem;
+            border-bottom: var(--border) solid var(--bs-border-color);
+        }
+
+        .success-card .card-body {
+            padding: 2rem;
+        }
+
+        .booking-number {
+            background: var(--color-base-300);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--radius-field);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            text-align: center;
+        }
+
+        .booking-number-code {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-success);
+            letter-spacing: 1px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-item {
+            background: var(--color-base-300);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--radius-field);
+            padding: 1.25rem;
+        }
+
+        .info-item-label {
+            color: var(--color-base-content);
+            opacity: 0.8;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .info-item-value {
+            color: var(--color-base-content);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .total-box {
+            background: var(--color-base-300);
+            border: var(--border) solid var(--color-success);
+            border-radius: var(--radius-field);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .total-label {
+            color: var(--color-base-content);
+            opacity: 0.8;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .total-amount {
+            color: var(--color-success);
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .btn-success-outline {
+            background: transparent;
+            border: var(--border) solid var(--color-success);
+            color: var(--color-success);
+            border-radius: var(--radius-selector);
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-success-outline:hover {
+            background: var(--color-success);
+            color: var(--color-success-content);
+            transform: translateY(-2px);
+        }
+
+        .concert-details {
+            background: var(--color-base-300);
+            border-radius: var(--radius-field);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .concert-title {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .concert-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .concert-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-base-content);
+            opacity: 0.9;
+        }
+
+        .concert-meta-item i {
+            color: var(--color-primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">AFISHA</a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <form class="d-flex">
+                    <input class="form-control search-input me-2" placeholder="Поиск">
+                    <button class="btn btn-outline-primary">Найти</button>
+                </form>
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-success"
+                   sec:authorize="!isAuthenticated()">Вход</a>
+
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                        <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Выйти</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <!-- Заголовок успеха -->
+    <section class="success-header">
+        <div class="container">
+            <div class="d-flex justify-content-center mb-3">
+                <i class="bi bi-check-circle-fill" style="font-size: 4rem; color: var(--color-success);"></i>
+            </div>
+            <h1>Бронирование подтверждено!</h1>
+            <p class="lead" style="color: var(--color-base-content); opacity: 0.9;">
+                Спасибо за вашу покупку. Детали отправлены на email.
+            </p>
+        </div>
+    </section>
+
+    <!-- Карточка с информацией о бронировании -->
+    <div class="success-card">
+        <div class="card-header">
+            <h3 class="mb-0"><i class="bi bi-ticket-perforated me-2"></i>Детали бронирования</h3>
+        </div>
+        <div class="card-body">
+
+            <!-- Номер бронирования -->
+            <div class="booking-number">
+                <div class="booking-number-label" style="color: var(--color-base-content); opacity: 0.8; margin-bottom: 0.5rem;">
+                    <i class="bi bi-hash me-1"></i>Номер бронирования
+                </div>
+                <div class="booking-number-code" th:text="${booking.bookingNumber}">BOOK-1234567890</div>
+                <small style="color: var(--color-base-content); opacity: 0.7;">
+                    Сохраните этот номер для отслеживания
+                </small>
+            </div>
+
+            <!-- Информация о концерте -->
+            <div class="concert-details" th:if="${booking.concert}">
+                <h4 class="concert-title" th:text="${booking.concert.title}">Название концерта</h4>
+                <div class="concert-meta">
+                    <div class="concert-meta-item">
+                        <i class="bi bi-calendar-event"></i>
+                        <span th:text="${#temporals.format(booking.concert.concertDateTime, 'dd.MM.yyyy')}">01.01.2026</span>
+                    </div>
+                    <div class="concert-meta-item">
+                        <i class="bi bi-clock"></i>
+                        <span th:text="${#temporals.format(booking.concert.concertDateTime, 'HH:mm')}">19:00</span>
+                    </div>
+                    <div class="concert-meta-item">
+                        <i class="bi bi-geo-alt"></i>
+                        <span th:text="${booking.concert.venueName}">Место проведения</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Информация о покупателе и заказе -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="info-item-label"><i class="bi bi-person me-1"></i>Имя покупателя</span>
+                    <div class="info-item-value" th:text="${booking.customerName}">Иван Иванов</div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-item-label"><i class="bi bi-envelope me-1"></i>Email</span>
+                    <div class="info-item-value" th:text="${booking.customerEmail}">email@example.com</div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-item-label"><i class="bi bi-telephone me-1"></i>Телефон</span>
+                    <div class="info-item-value" th:text="${booking.customerPhone}">+375 (XX) XXX-XX-XX</div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-item-label"><i class="bi bi-ticket me-1"></i>Количество билетов</span>
+                    <div class="info-item-value" th:text="${booking.ticketQuantity} + ' шт.'">1 шт.</div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-item-label"><i class="bi bi-currency-exchange me-1"></i>Цена за билет</span>
+                    <div class="info-item-value" th:text="${booking.pricePerTicket} + ' ' + ${booking.concert.currency}">50 BYN</div>
+                </div>
+
+                <div class="info-item">
+                    <span class="info-item-label"><i class="bi bi-calendar-check me-1"></i>Дата бронирования</span>
+                    <div class="info-item-value" th:text="${#temporals.format(booking.bookingDate, 'dd.MM.yyyy HH:mm')}">01.01.2026 14:30</div>
+                </div>
+            </div>
+
+            <!-- Итоговая сумма -->
+            <div class="total-box">
+                <div class="total-label">Общая сумма к оплате</div>
+                <div class="total-amount" th:text="${booking.totalAmount} + ' ' + ${booking.concert.currency}">50 BYN</div>
+                <small style="color: var(--color-base-content); opacity: 0.7; display: block; margin-top: 0.5rem;">
+                    Включая все сборы
+                </small>
+            </div>
+
+            <!-- Информационное сообщение -->
+            <div class="alert alert-info">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-info-circle me-2" style="font-size: 1.25rem;"></i>
+                    <div>
+                        <h6 class="alert-heading">Важная информация</h6>
+                        <p class="mb-1">• Подтверждение бронирования отправлено на указанный email</p>
+                        <p class="mb-1">• Приходите за 30 минут до начала концерта</p>
+                        <p class="mb-0">• Электронные билеты будут доступны в день концерта</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="action-buttons">
+                <a th:href="@{'/concert/' + ${booking.concert.id}}" class="btn btn-outline-primary">
+                    <i class="bi bi-arrow-left me-2"></i>Вернуться к концерту
+                </a>
+                <a th:href="@{/}" class="btn btn-primary">
+                    <i class="bi bi-house me-2"></i>На главную
+                </a>
+                <button class="btn btn-success-outline" onclick="window.print()">
+                    <i class="bi bi-printer me-2"></i>Распечатать
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Дополнительная информация -->
+    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="bi bi-question-circle me-2"></i>Возникли вопросы?</h5>
+                    <p class="card-text" style="color: var(--color-base-content); opacity: 0.9;">
+                        Если у вас есть вопросы по бронированию, свяжитесь с нашей службой поддержки.
+                    </p>
+                    <a href="#" class="btn btn-outline-secondary">
+                        <i class="bi bi-headset me-2"></i>Служба поддержки
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title text-primary"><i class="bi bi-calendar-check me-2"></i>Ваши билеты</h5>
+                    <p class="card-text" style="color: var(--color-base-content); opacity: 0.9;">
+                        Для просмотра всех ваших бронирований перейдите в личный кабинет.
+                    </p>
+                    <a th:href="@{/profile}" sec:authorize="isAuthenticated()" class="btn btn-outline-secondary">
+                        <i class="bi bi-person-circle me-2"></i>Личный кабинет
+                    </a>
+                    <a th:href="@{/login}" sec:authorize="!isAuthenticated()" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Войти в аккаунт
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <div class="mb-2">
+            <a th:href="@{/}" class="me-3">Главная</a>
+            <a href="#" class="me-3">Контакты</a>
+            <a href="#" class="me-3">Помощь</a>
+            <a href="#" class="me-3">Условия</a>
+        </div>
+        <small>© СП262 · Все события в одном месте</small>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>afisha</groupId>
-	<artifactId>afisha262</artifactId>
+	<artifactId>afisha</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>afisha</name>
 	<description>Project for Spring Boot</description>

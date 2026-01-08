@@ -4,7 +4,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Купить билет — Imagine Dragons</title>
+    <title>Купить билет — <span th:text="${concert.title}">Imagine Dragons</span></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Bootstrap -->
@@ -42,10 +42,6 @@
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
             font-weight: 700;
-        }
-
-        .form-section {
-            margin-top: 2rem;
         }
 
         .btn-back {
@@ -154,6 +150,18 @@
             color: var(--color-base-content);
             font-weight: 500;
         }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .alert-custom {
+            border-radius: var(--bs-border-radius);
+            border: var(--border) solid var(--bs-border-color);
+            background: var(--color-base-200);
+        }
     </style>
 </head>
 <body>
@@ -161,7 +169,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark">
     <div class="container">
-        <a class="navbar-brand" href="index">AFISHA</a>
+        <a class="navbar-brand" th:href="@{/}">AFISHA</a>
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <div class="ms-auto d-flex align-items-center gap-3">
@@ -183,7 +191,7 @@
                         <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
                     </div>
                     <form th:action="@{/logout}" method="post">
-                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                        <button class="btn btn-outline-danger btn-sm">Выйти</button>
                     </form>
                 </div>
 
@@ -193,35 +201,63 @@
 </nav>
 
 <div class="container">
+    <!-- Кнопка назад -->
+    <a th:href="@{'/concert/' + ${concert.id}}" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Назад к концерту
+    </a>
 
     <!-- Заголовок -->
     <section class="ticket-header">
         <div class="container">
-            <h1>Imagine Dragons Live</h1>
-            <p><i class="bi bi-geo-alt"></i> Минск-Арена • <i class="bi bi-calendar"></i> 12 февраля 2026</p>
+            <h1 th:text="${concert.title}">Imagine Dragons Live</h1>
+            <p>
+                <i class="bi bi-person-badge"></i>
+                <span th:text="${concert.artist}">Imagine Dragons</span> •
+                <i class="bi bi-calendar"></i>
+                <span th:text="${#temporals.format(concert.concertDateTime, 'dd MMMM yyyy')}">12 февраля 2026</span>
+            </p>
         </div>
     </section>
+
+    <!-- Сообщение об ошибке (вне формы) -->
+    <div th:if="${errorMessage != null}" class="alert alert-danger alert-custom" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
 
     <div class="row g-4">
         <!-- Левая колонка с формой -->
         <div class="col-lg-8">
             <div class="p-4" style="background: var(--color-base-200); border-radius: var(--bs-border-radius);">
                 <h3 class="section-title">Форма покупки билета</h3>
-                <form action="/purchase" method="post">
+
+                <!-- Форма -->
+                <form th:action="@{/bookings/create}" th:object="${booking}" method="post" id="bookingForm">
+                    <!-- Скрытые поля -->
+                    <input type="hidden" th:field="*{concert.id}" th:value="${concert.id}">
+                    <input type="hidden" id="pricePerTicket" th:value="${concert.price}">
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Имя</label>
-                                <input type="text" class="form-control" id="name" name="name" placeholder="Ваше имя"
-                                       required>
+                                <input type="text" class="form-control" id="name" th:field="*{customerName}"
+                                       placeholder="Ваше имя" required>
+                                <!-- Проверка ошибок внутри формы -->
+                                <div th:if="${#fields.hasErrors('customerName')}" class="error-message">
+                                    <span th:errors="*{customerName}"></span>
+                                </div>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email"
+                                <input type="email" class="form-control" id="email" th:field="*{customerEmail}"
                                        placeholder="example@mail.com" required>
+                                <div th:if="${#fields.hasErrors('customerEmail')}" class="error-message">
+                                    <span th:errors="*{customerEmail}"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -230,16 +266,23 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Телефон</label>
-                                <input type="tel" class="form-control" id="phone" name="phone"
+                                <input type="tel" class="form-control" id="phone" th:field="*{customerPhone}"
                                        placeholder="+375 (XX) XXX-XX-XX" required>
+                                <div th:if="${#fields.hasErrors('customerPhone')}" class="error-message">
+                                    <span th:errors="*{customerPhone}"></span>
+                                </div>
                             </div>
                         </div>
 
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="tickets" class="form-label">Количество билетов</label>
-                                <input type="number" class="form-control" id="tickets" name="tickets" min="1" max="10"
-                                       value="1" required>
+                                <input type="number" class="form-control" id="tickets" th:field="*{ticketQuantity}"
+                                       min="1" max="10" value="1" required
+                                       onchange="updateTotal()">
+                                <div th:if="${#fields.hasErrors('ticketQuantity')}" class="error-message">
+                                    <span th:errors="*{ticketQuantity}"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -250,21 +293,29 @@
                         <h5 class="mb-3">Сводка заказа</h5>
                         <div class="summary-item">
                             <span class="summary-label">Цена за билет:</span>
-                            <span class="summary-value">50 BYN</span>
+                            <span class="summary-value">
+                                <span id="price-display" th:text="${concert.price}">50</span>
+                                <span th:text="${concert.currency}">BYN</span>
+                            </span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">Количество:</span>
-                            <span class="summary-value"><span id="quantity-display">1</span> шт.</span>
+                            <span class="summary-value">
+                                <span id="quantity-display">1</span> шт.
+                            </span>
                         </div>
                         <div class="summary-item">
                             <span class="summary-label">Итого:</span>
-                            <span class="summary-value total-amount" id="total-display">50 BYN</span>
+                            <span class="summary-value total-amount" id="total-display">
+                                <span id="total-amount">50</span>
+                                <span th:text="${concert.currency}">BYN</span>
+                            </span>
                         </div>
                     </div>
 
-                    <!-- Скрытые поля для отправки -->
-                    <input type="hidden" id="price" name="price" value="50">
-                    <input type="hidden" id="total" name="total" value="50">
+                    <!-- Скрытые поля для totalAmount и pricePerTicket -->
+                    <input type="hidden" th:field="*{totalAmount}" id="totalAmount" value="50">
+                    <input type="hidden" th:field="*{pricePerTicket}" th:value="${concert.price}">
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary btn-lg py-3">
@@ -278,16 +329,44 @@
         <!-- Правая колонка с информацией -->
         <div class="col-lg-4">
             <div class="purchase-card">
-                <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg"
-                     class="card-img-top" alt="Imagine Dragons">
+                <img th:if="${concert.imageUrl != null}"
+                     th:src="${concert.imageUrl}"
+                     src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg"
+                     class="card-img-top" alt="Концерт">
                 <div class="card-body">
                     <h5 class="card-title text-primary mb-3">Детали события</h5>
                     <div class="mb-3">
-                        <p class="mb-2"><i class="bi bi-calendar-event me-2 text-primary"></i><strong>Дата:</strong> 12
-                            февраля 2026</p>
-                        <p class="mb-2"><i class="bi bi-clock me-2 text-primary"></i><strong>Время:</strong> 19:00</p>
-                        <p class="mb-2"><i class="bi bi-geo-alt me-2 text-primary"></i><strong>Место:</strong>
-                            Минск-Арена</p>
+                        <p class="mb-2">
+                            <i class="bi bi-calendar-event me-2 text-primary"></i>
+                            <strong>Дата:</strong>
+                            <span th:text="${#temporals.format(concert.concertDateTime, 'dd MMMM yyyy')}">12 февраля 2026</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-clock me-2 text-primary"></i>
+                            <strong>Время:</strong>
+                            <span th:text="${#temporals.format(concert.concertDateTime, 'HH:mm')}">19:00</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-geo-alt me-2 text-primary"></i>
+                            <strong>Место:</strong>
+                            <span th:text="${concert.venueName}"></span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-geo me-2 text-primary"></i>
+                            <strong>Адрес:</strong>
+                            <span th:text="${concert.venueAddress}"></span>,
+                            <span th:text="${concert.city}"></span>
+                        </p>
+                        <p class="mb-2" th:if="${concert.availableTickets != null}">
+                            <i class="bi bi-ticket-perforated me-2 text-primary"></i>
+                            <strong>Доступно билетов:</strong>
+                            <span th:text="${concert.availableTickets}">100</span>
+                        </p>
+                        <p class="mb-2">
+                            <i class="bi bi-person-badge me-2 text-primary"></i>
+                            <strong>Артист:</strong>
+                            <span th:text="${concert.artist}"></span>
+                        </p>
                     </div>
 
                     <hr style="border-color: var(--bs-border-color);">
@@ -297,6 +376,9 @@
                         <li class="mb-1"><i class="bi bi-check-circle text-success me-1"></i> Безопасная оплата</li>
                         <li class="mb-1"><i class="bi bi-check-circle text-success me-1"></i> Возврат за 72 часа</li>
                         <li class="mb-1"><i class="bi bi-check-circle text-success me-1"></i> Электронные билеты</li>
+                        <li class="mb-1" th:if="${concert.availableTickets != null and concert.availableTickets < 20}">
+                            <i class="bi bi-exclamation-triangle text-warning me-1"></i> Осталось мало билетов!
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -308,7 +390,7 @@
 <footer class="py-4 mt-5">
     <div class="container text-center">
         <div class="mb-2">
-            <a href="index" class="me-3">Главная</a>
+            <a th:href="@{/}" class="me-3">Главная</a>
             <a href="#" class="me-3">Контакты</a>
             <a href="#" class="me-3">Помощь</a>
         </div>
@@ -322,24 +404,36 @@
     // Автоматический пересчет итоговой суммы
     const ticketsInput = document.getElementById('tickets');
     const quantityDisplay = document.getElementById('quantity-display');
-    const totalDisplay = document.getElementById('total-display');
-    const priceHidden = document.getElementById('price');
-    const totalHidden = document.getElementById('total');
-    const pricePerTicket = 50; // BYN
+    const totalAmountSpan = document.getElementById('total-amount');
+    const totalHidden = document.getElementById('totalAmount');
+    const priceDisplay = document.getElementById('price-display');
+    const pricePerTicket = parseFloat(priceDisplay.textContent) || 50;
 
     function updateTotal() {
         const quantity = parseInt(ticketsInput.value) || 1;
         const total = quantity * pricePerTicket;
 
         quantityDisplay.textContent = quantity;
-        totalDisplay.textContent = total + ' BYN';
-        totalHidden.value = total;
+        totalAmountSpan.textContent = total.toFixed(2);
+
+        if (totalHidden) {
+            totalHidden.value = total.toFixed(2);
+        }
     }
 
     ticketsInput.addEventListener('input', updateTotal);
+    ticketsInput.addEventListener('change', updateTotal);
 
     // Инициализация при загрузке
-    updateTotal();
+    document.addEventListener('DOMContentLoaded', function() {
+        updateTotal();
+
+        // Также обновляем при изменении скрытых полей
+        const priceField = document.querySelector('input[name="pricePerTicket"]');
+        if (priceField) {
+            priceField.addEventListener('change', updateTotal);
+        }
+    });
 </script>
 
 </body>
