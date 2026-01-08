@@ -151,12 +151,15 @@
 </div>
 
 <!-- EVENTS -->
-<div class="container my-5">
+<div class="container my-5 mx-20">
 
     <!-- Заголовок с количеством концертов -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="text-primary">Предстоящие мероприятия</h1>
-        <h3 th:text="${concerts != null ? concerts.size() : 0}">0</h3>
+        <a th:href="@{'/schedule'}"
+           class="btn btn-sm btn-primary">
+            Расписание
+        </a>
     </div>
 
     <div th:if="${#lists.isEmpty(concerts)}" class="no-concerts">

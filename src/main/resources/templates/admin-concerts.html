@@ -15,225 +15,51 @@
     <link href="/scripts/style.css" rel="stylesheet">
 
     <style>
-        .admin-container {
-            min-height: 100vh;
-            background: var(--color-base-100);
-            padding-top: 1rem;
-        }
+        /* Общие стили админ-панели */
+        .admin-container { min-height: 100vh; background: var(--color-base-100); padding-top: 1rem; }
+        .admin-header { background: var(--color-base-200); border-bottom: var(--border) solid var(--bs-border-color); padding: 1rem 0; margin-bottom: 2rem; }
+        .admin-nav { background: var(--color-base-200); border-right: var(--border) solid var(--bs-border-color); min-height: calc(100vh - 100px); padding: 1.5rem 0; }
+        .admin-content { padding: 1.5rem; }
+        .admin-card { background: var(--color-base-200); border: var(--border) solid var(--bs-border-color); border-radius: var(--bs-border-radius); box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 1.5rem; overflow: hidden; }
+        .admin-card-header { background: var(--color-base-300); border-bottom: var(--border) solid var(--bs-border-color); padding: 1rem 1.5rem; color: var(--color-primary); font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .admin-card-body { padding: 1.5rem; }
+        .nav-item { margin-bottom: 0.25rem; }
+        .nav-link { color: var(--color-base-content); padding: 0.75rem 1rem; border-radius: var(--radius-field); display: flex; align-items: center; gap: 0.75rem; transition: all 0.2s ease; }
+        .nav-link:hover, .nav-link.active { background: var(--color-base-300); color: var(--color-primary); text-decoration: none; }
+        .nav-link i { width: 1.25rem; text-align: center; }
 
-        .admin-header {
-            background: var(--color-base-200);
-            border-bottom: var(--border) solid var(--bs-border-color);
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
+        /* Стили для концертов */
+        .concert-table { background: var(--color-base-200); border-radius: var(--bs-border-radius); overflow: hidden; border: var(--border) solid var(--bs-border-color); }
+        .concert-table thead { background: var(--color-base-300); color: var(--color-base-content); border-bottom: var(--border) solid var(--bs-border-color); }
+        .concert-table th { color: var(--color-primary); font-weight: 600; padding: 1rem; border-bottom: 2px solid var(--color-primary) !important; }
+        .concert-table td { padding: 1rem; color: var(--color-base-content); border-bottom: var(--border) solid var(--bs-border-color); vertical-align: middle; }
+        .concert-table tbody tr:hover { background: color-mix(in oklch, var(--color-base-300) 50%, transparent); }
 
-        .admin-nav {
-            background: var(--color-base-200);
-            border-right: var(--border) solid var(--bs-border-color);
-            min-height: calc(100vh - 100px);
-            padding: 1.5rem 0;
-        }
+        .image-preview { width: 60px; height: 60px; object-fit: cover; border-radius: var(--radius-field); border: var(--border) solid var(--bs-border-color); }
+        .concert-actions { display: flex; gap: 0.5rem; justify-content: center; }
+        .btn-admin-sm { border-radius: var(--radius-field); padding: 0.375rem 0.75rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s ease; }
 
-        .admin-content {
-            padding: 1.5rem;
-        }
+        .stats-card { background: var(--color-base-200); border: var(--border) solid var(--bs-border-color); border-radius: var(--bs-border-radius); padding: 1.5rem; text-align: center; transition: transform 0.3s ease; }
+        .stats-card:hover { transform: translateY(-5px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .stats-number { font-size: 2.5rem; font-weight: 700; color: var(--color-primary); line-height: 1; margin-bottom: 0.5rem; }
+        .stats-label { color: var(--color-base-content); opacity: 0.8; font-size: 0.9rem; }
 
-        .admin-card {
-            background: var(--color-base-200);
-            border: var(--border) solid var(--bs-border-color);
-            border-radius: var(--bs-border-radius);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-            overflow: hidden;
-        }
+        .search-box { background: var(--color-base-300); border: var(--border) solid var(--bs-border-color); border-radius: var(--radius-selector); padding: 0.75rem 1rem; color: var(--color-base-content); }
+        .search-box:focus { border-color: var(--color-primary); box-shadow: 0 0 0 0.25rem color-mix(in oklch, var(--color-primary) 25%, transparent); outline: none; }
 
-        .admin-card-header {
-            background: var(--color-base-300);
-            border-bottom: var(--border) solid var(--bs-border-color);
-            padding: 1rem 1.5rem;
-            color: var(--color-primary);
-            font-weight: 700;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .admin-card-body {
-            padding: 1.5rem;
-        }
-
-        .admin-table {
-            background: var(--color-base-200);
-            border-radius: var(--bs-border-radius);
-            overflow: hidden;
-            border: var(--border) solid var(--bs-border-color);
-        }
-
-        .admin-table thead {
-            background: var(--color-base-300);
-            color: var(--color-base-content);
-            border-bottom: var(--border) solid var(--bs-border-color);
-        }
-
-        .admin-table th {
-            color: var(--color-primary);
-            font-weight: 600;
-            padding: 1rem;
-            border-bottom: 2px solid var(--color-primary) !important;
-        }
-
-        .admin-table td {
-            padding: 1rem;
-            color: var(--color-base-content);
-            border-bottom: var(--border) solid var(--bs-border-color);
-            vertical-align: middle;
-        }
-
-        .admin-table tbody tr {
-            transition: background-color 0.2s ease;
-        }
-
-        .admin-table tbody tr:hover {
-            background: color-mix(in oklch, var(--color-base-300) 50%, transparent);
-        }
-
-        .admin-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        .nav-item {
-            margin-bottom: 0.25rem;
-        }
-
-        .nav-link {
-            color: var(--color-base-content);
-            padding: 0.75rem 1rem;
-            border-radius: var(--radius-field);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-            background: var(--color-base-300);
-            color: var(--color-primary);
-            text-decoration: none;
-        }
-
-        .nav-link i {
-            width: 1.25rem;
-            text-align: center;
-        }
-
-        .admin-badge {
-            background: var(--color-primary);
-            color: var(--color-primary-content);
-            border-radius: var(--radius-selector);
-            padding: 0.25rem 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: auto;
-        }
-
-        .admin-actions {
-            display: flex;
-            gap: 0.5rem;
-            justify-content: center;
-        }
-
-        .btn-admin {
-            border-radius: var(--radius-field);
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .btn-admin-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.875rem;
-        }
-
-        .image-preview {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: var(--radius-field);
-            border: var(--border) solid var(--bs-border-color);
-        }
-
-        .stats-card {
-            background: var(--color-base-200);
-            border: var(--border) solid var(--bs-border-color);
-            border-radius: var(--bs-border-radius);
-            padding: 1.5rem;
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .stats-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-
-        .stats-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--color-primary);
-            line-height: 1;
-            margin-bottom: 0.5rem;
-        }
-
-        .stats-label {
-            color: var(--color-base-content);
-            opacity: 0.8;
-            font-size: 0.9rem;
-        }
-
-        .pagination-admin .page-link {
-            background: var(--color-base-300);
-            border: var(--border) solid var(--bs-border-color);
-            color: var(--color-base-content);
-            margin: 0 0.25rem;
-            border-radius: var(--radius-field);
-        }
-
-        .pagination-admin .page-link:hover {
-            background: var(--color-base-200);
-            color: var(--color-primary);
-        }
-
-        .pagination-admin .page-item.active .page-link {
-            background: var(--color-primary);
-            border-color: var(--color-primary);
-            color: var(--color-primary-content);
-        }
+        .error-message { color: var(--color-error); font-size: 0.9rem; margin-top: 0.25rem; }
 
         /* Мобильная адаптация */
         @media (max-width: 768px) {
-            .admin-nav {
-                min-height: auto;
-                border-right: none;
-                border-bottom: var(--border) solid var(--bs-border-color);
-                margin-bottom: 1rem;
-                padding: 1rem;
-            }
-
-            .admin-table {
-                font-size: 0.9rem;
-            }
-
-            .admin-table th,
-            .admin-table td {
-                padding: 0.75rem;
-            }
-
-            .admin-actions {
-                flex-direction: column;
-                gap: 0.25rem;
-            }
+            .admin-nav { min-height: auto; border-right: none; border-bottom: var(--border) solid var(--bs-border-color); margin-bottom: 1rem; padding: 1rem; }
+            .concert-table { font-size: 0.9rem; }
+            .concert-actions { flex-direction: column; }
         }
+
+        .modal-content { background: var(--color-base-200); border: var(--border) solid var(--bs-border-color); border-radius: var(--bs-border-radius); }
+        .modal-header { background: var(--color-base-300); border-bottom: var(--border) solid var(--bs-border-color); color: var(--color-primary); }
+        .modal-body { color: var(--color-base-content); }
+        .modal-footer { border-top: var(--border) solid var(--bs-border-color); }
     </style>
 </head>
 <body class="admin-container">
@@ -244,20 +70,22 @@
         <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-3">
                 <h1 class="h4 mb-0" style="color: var(--color-primary);">
-                    <i class="bi bi-gear me-2"></i>Админ-панель AFISHA
+                    <i class="bi bi-music-note-list me-2"></i>Концерты | Админ-панель
                 </h1>
             </div>
 
-            <div class="d-flex align-items-center gap-2"
-                 sec:authorize="isAuthenticated()">
-                <div class="text-end">
-                    <div class="fw-semibold" sec:authentication="name"></div>
-                    <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
-                    <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+            <div class="d-flex align-items-center gap-3">
+                <input type="text" class="search-box" placeholder="Поиск концертов..." style="max-width: 250px;" id="searchConcerts">
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
                 </div>
-                <form th:action="@{/logout}" method="post">
-                    <button class="btn btn-outline-danger btn-sm">Logout</button>
-                </form>
             </div>
         </div>
     </div>
@@ -286,22 +114,28 @@
         <!-- Main Content -->
         <main class="col-md-9 col-lg-10 admin-content">
             <!-- Статистика -->
-            <div class="row mb-4">
+            <div class="row mb-4" id="concertStats">
                 <div class="col-md-3 col-6">
                     <div class="stats-card">
-                        <div class="stats-number">12</div>
-                        <div class="stats-label">Концертов</div>
+                        <div class="stats-number" id="totalConcerts">0</div>
+                        <div class="stats-label">Всего концертов</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stats-card">
-                        <div class="stats-number">156</div>
-                        <div class="stats-label">Пользователей</div>
+                        <div class="stats-number" id="upcomingConcerts">0</div>
+                        <div class="stats-label">Предстоящие</div>
                     </div>
                 </div>
                 <div class="col-md-3 col-6">
                     <div class="stats-card">
-                        <div class="stats-number">8,540</div>
+                        <div class="stats-number" id="totalTickets">0</div>
+                        <div class="stats-label">Всего билетов</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stats-card">
+                        <div class="stats-number" id="totalRevenue">0</div>
                         <div class="stats-label">BYN доход</div>
                     </div>
                 </div>
@@ -311,82 +145,38 @@
             <div class="admin-card">
                 <div class="admin-card-header">
                     <span>Управление концертами</span>
-                    <a href="/admin/concerts/new" class="btn btn-primary btn-admin btn-sm">
-                        <i class="bi bi-plus-circle me-1"></i> Добавить концерт
-                    </a>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary btn-admin-sm" onclick="showAddModal()">
+                            <i class="bi bi-plus-circle me-1"></i> Добавить концерт
+                        </button>
+                    </div>
                 </div>
 
                 <div class="admin-card-body">
                     <!-- Таблица концертов -->
                     <div class="table-responsive">
-                        <table class="table admin-table">
+                        <table class="table concert-table">
                             <thead>
                             <tr>
                                 <th>ID</th>
                                 <th>Название</th>
                                 <th>Изображение</th>
-                                <th>Дата</th>
+                                <th>Исполнитель</th>
+                                <th>Дата и время</th>
                                 <th>Место</th>
                                 <th>Цена</th>
+                                <th>Билеты</th>
                                 <th class="text-center">Действия</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <!-- Пример строки (в реальности th:each="concert : ${concerts}") -->
+                            <tbody id="concertsTableBody">
+                            <!-- Данные загружаются динамически через JavaScript -->
                             <tr>
-                                <td>1</td>
-                                <td><strong>Imagine Dragons Live</strong></td>
-                                <td>
-                                    <img src="https://www.baltana.com/files/wallpapers-11/Imagine-Dragons-HD-Wallpaper-30575.jpg"
-                                         class="image-preview" alt="Preview">
-                                </td>
-                                <td>2026-02-12</td>
-                                <td>Минск-Арена</td>
-                                <td><strong>50 BYN</strong></td>
-                                <td class="text-center">
-                                    <div class="admin-actions">
-                                        <a href="/admin/concerts/1/edit"
-                                           class="btn btn-warning btn-admin btn-admin-sm"
-                                           title="Редактировать">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a href="/admin/concerts/1/view"
-                                           class="btn btn-info btn-admin btn-admin-sm"
-                                           title="Просмотр">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <button type="button"
-                                                class="btn btn-danger btn-admin btn-admin-sm"
-                                                title="Удалить"
-                                                onclick="confirmDelete(1)">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                <td colspan="9" class="text-center py-4">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Загрузка...</span>
                                     </div>
-                                </td>
-                            </tr>
-                            <!-- Ещё примеры -->
-                            <tr>
-                                <td>2</td>
-                                <td><strong>Рок-концерт The Skillet</strong></td>
-                                <td>
-                                    <img src="https://www.billboard.com/wp-content/uploads/2022/01/Skillet-cr-Jimmy-Fontaine-press-2022-billboard-1548.jpg"
-                                         class="image-preview" alt="Preview">
-                                </td>
-                                <td>2026-02-20</td>
-                                <td>Palace of Sports</td>
-                                <td><strong>60 BYN</strong></td>
-                                <td class="text-center">
-                                    <div class="admin-actions">
-                                        <a href="#" class="btn btn-warning btn-admin btn-admin-sm">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-info btn-admin btn-admin-sm">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-danger btn-admin btn-admin-sm">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </div>
+                                    <p class="mt-2">Загрузка концертов...</p>
                                 </td>
                             </tr>
                             </tbody>
@@ -398,40 +188,744 @@
     </div>
 </div>
 
+<!-- Модальное окно добавления концерта -->
+<div class="modal fade" id="addConcertModal" tabindex="-1" aria-labelledby="addConcertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addConcertModalLabel">Добавить новый концерт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="saveNewConcert">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="titleNew" class="form-label">Название концерта *</label>
+                            <input type="text" class="form-control" id="titleNew" name="title" placeholder="Введите название" required>
+                            <div class="error-message" id="titleError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="artistNew" class="form-label">Исполнитель *</label>
+                            <input type="text" class="form-control" id="artistNew" name="artist" placeholder="Введите исполнителя" required>
+                            <div class="error-message" id="artistError"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descriptionNew" class="form-label">Описание</label>
+                        <textarea class="form-control" id="descriptionNew" name="description" rows="3" placeholder="Описание концерта"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="concertDateTimeNew" class="form-label">Дата и время *</label>
+                            <input type="datetime-local" class="form-control" id="concertDateTimeNew" name="concertDateTime" required>
+                            <div class="error-message" id="concertDateTimeError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="priceNew" class="form-label">Цена (BYN) *</label>
+                            <input type="number" class="form-control" id="priceNew" name="price" min="0" step="0.01" placeholder="0.00" required>
+                            <div class="error-message" id="priceError"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="venueNameNew" class="form-label">Название места *</label>
+                            <input type="text" class="form-control" id="venueNameNew" name="venueName" placeholder="Например: Минск-Арена" required>
+                            <div class="error-message" id="venueNameError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="cityNew" class="form-label">Город *</label>
+                            <input type="text" class="form-control" id="cityNew" name="city" placeholder="Например: Минск" required>
+                            <div class="error-message" id="cityError"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="venueAddressNew" class="form-label">Адрес *</label>
+                        <input type="text" class="form-control" id="venueAddressNew" name="venueAddress" placeholder="Полный адрес места проведения" required>
+                        <div class="error-message" id="venueAddressError"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="availableTicketsNew" class="form-label">Доступные билеты *</label>
+                            <input type="number" class="form-control" id="availableTicketsNew" name="availableTickets" min="1" placeholder="100" required>
+                            <div class="error-message" id="availableTicketsError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="totalTicketsNew" class="form-label">Всего билетов *</label>
+                            <input type="number" class="form-control" id="totalTicketsNew" name="totalTickets" min="1" placeholder="100" required>
+                            <div class="error-message" id="totalTicketsError"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="imageUrlNew" class="form-label">URL изображения</label>
+                        <input type="url" class="form-control" id="imageUrlNew" name="imageUrl" placeholder="https://example.com/image.jpg">
+                        <div class="error-message" id="imageUrlError"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="additionalInfoNew" class="form-label">Дополнительная информация</label>
+                        <textarea class="form-control" id="additionalInfoNew" name="additionalInfo" rows="2" placeholder="Дополнительная информация"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования концерта -->
+<div class="modal fade" id="editConcertModal" tabindex="-1" aria-labelledby="editConcertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editConcertModalLabel">Редактировать концерт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditConcert">
+                    <input type="hidden" id="editConcertId" name="id">
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editTitle" class="form-label">Название концерта *</label>
+                            <input type="text" class="form-control" id="editTitle" name="title" required>
+                            <div class="error-message" id="editTitleError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editArtist" class="form-label">Исполнитель *</label>
+                            <input type="text" class="form-control" id="editArtist" name="artist" required>
+                            <div class="error-message" id="editArtistError"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Описание</label>
+                        <textarea class="form-control" id="editDescription" name="description" rows="3"></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editConcertDateTime" class="form-label">Дата и время *</label>
+                            <input type="datetime-local" class="form-control" id="editConcertDateTime" name="concertDateTime" required>
+                            <div class="error-message" id="editConcertDateTimeError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editPrice" class="form-label">Цена (BYN) *</label>
+                            <input type="number" class="form-control" id="editPrice" name="price" min="0" step="0.01" required>
+                            <div class="error-message" id="editPriceError"></div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editVenueName" class="form-label">Название места *</label>
+                            <input type="text" class="form-control" id="editVenueName" name="venueName" required>
+                            <div class="error-message" id="editVenueNameError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editCity" class="form-label">Город *</label>
+                            <input type="text" class="form-control" id="editCity" name="city" required>
+                            <div class="error-message" id="editCityError"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editVenueAddress" class="form-label">Адрес *</label>
+                        <input type="text" class="form-control" id="editVenueAddress" name="venueAddress" required>
+                        <div class="error-message" id="editVenueAddressError"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editAvailableTickets" class="form-label">Доступные билеты *</label>
+                            <input type="number" class="form-control" id="editAvailableTickets" name="availableTickets" min="0" required>
+                            <div class="error-message" id="editAvailableTicketsError"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editTotalTickets" class="form-label">Всего билетов *</label>
+                            <input type="number" class="form-control" id="editTotalTickets" name="totalTickets" min="1" required>
+                            <div class="error-message" id="editTotalTicketsError"></div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editImageUrl" class="form-label">URL изображения</label>
+                        <input type="url" class="form-control" id="editImageUrl" name="imageUrl">
+                        <div class="error-message" id="editImageUrlError"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editAdditionalInfo" class="form-label">Дополнительная информация</label>
+                        <textarea class="form-control" id="editAdditionalInfo" name="additionalInfo" rows="2"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно удаления концерта -->
+<div class="modal fade" id="deleteConcertModal" tabindex="-1" aria-labelledby="deleteConcertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConcertModalLabel">Удалить концерт</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDeleteConcert">
+                    <input type="hidden" id="deleteConcertId" name="id">
+
+                    <div class="mb-3">
+                        <label class="form-label">Название концерта</label>
+                        <input type="text" class="form-control" id="deleteTitle" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Исполнитель</label>
+                        <input type="text" class="form-control" id="deleteArtist" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Дата и время</label>
+                        <input type="text" class="form-control" id="deleteConcertDateTime" readonly>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Место проведения</label>
+                        <input type="text" class="form-control" id="deleteVenueName" readonly>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Внимание!</strong> Удаление концерта приведет к удалению всех связанных бронирований. Это действие нельзя отменить.
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <button type="submit" class="btn btn-danger">Удалить концерт</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // Подтверждение удаления
-    function confirmDelete(concertId) {
-        if (confirm('Вы уверены, что хотите удалить этот концерт? Это действие нельзя отменить.')) {
-            // В реальном приложении здесь будет AJAX-запрос
-            console.log('Удаление концерта с ID:', concertId);
-            // window.location.href = '/admin/concerts/' + concertId + '/delete';
+    // Глобальные переменные
+    let allConcerts = [];
 
-            // Для демо показываем уведомление
-            alert('Концерт удалён (демо)');
+    // Функция загрузки концертов
+    async function loadConcerts() {
+        try {
+            console.log('Загрузка концертов из /api/admin/concerts...');
+            const response = await fetch("/api/admin/concerts");
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            allConcerts = await response.json();
+            console.log('Получены концерты:', allConcerts);
+
+            renderConcerts();
+            updateConcertStats();
+
+        } catch (error) {
+            console.error('Ошибка загрузки концертов:', error);
+            document.getElementById('concertsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center py-4">
+                        <i class="bi bi-exclamation-triangle text-warning display-4 mb-3"></i>
+                        <p>Ошибка загрузки концертов</p>
+                        <small class="text-muted">${error.message}</small>
+                        <button class="btn btn-sm btn-outline-primary mt-2" onclick="loadConcerts()">
+                            <i class="bi bi-arrow-clockwise"></i> Повторить
+                        </button>
+                    </td>
+                </tr>
+            `;
         }
     }
 
-    // Поиск в реальном времени (демо)
-    const searchBox = document.querySelector('.search-box');
-    if (searchBox) {
-        searchBox.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            console.log('Поиск:', searchTerm);
-            // В реальном приложении здесь будет фильтрация таблицы
+    // Функция рендеринга концертов в таблицу
+    function renderConcerts() {
+        const tbody = document.getElementById('concertsTableBody');
+        if (!tbody) return;
+
+        if (allConcerts.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center py-4">
+                        <i class="bi bi-music-note-beamed display-4 text-muted mb-3"></i>
+                        <p>Нет концертов</p>
+                        <button class="btn btn-sm btn-primary" onclick="showAddModal()">
+                            <i class="bi bi-plus-circle"></i> Добавить первый концерт
+                        </button>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let concertsTableHTML = '';
+
+        allConcerts.forEach(concert => {
+            const concertDate = new Date(concert.concertDateTime);
+            const formattedDate = concertDate.toLocaleDateString('ru-RU');
+            const formattedTime = concertDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            const imageUrl = concert.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image';
+
+            // Статус концерта
+            const now = new Date();
+            const isPast = concertDate < now;
+            const statusClass = isPast ? 'text-muted' : 'text-success';
+            const statusIcon = isPast ? 'bi-calendar-x' : 'bi-calendar-check';
+
+            concertsTableHTML += `
+                <tr>
+                    <td>${concert.id || 'N/A'}</td>
+                    <td>
+                        <img src="${imageUrl}" class="image-preview" alt="${concert.title || 'Концерт'}"
+                             onerror="this.src='https://via.placeholder.com/60x60?text=No+Image'">
+                    </td>
+                    <td>${concert.artist || 'Не указан'}</td>
+                    <td>
+                        <div><i class="bi bi-calendar"></i> ${formattedDate}</div>
+                        <div><i class="bi bi-clock"></i> ${formattedTime}</div>
+                        <small class="${statusClass}"><i class="bi ${statusIcon}"></i> ${isPast ? 'Прошедший' : 'Предстоящий'}</small>
+                    </td>
+                    <td>${concert.venueName || 'Не указано'}<br><small>${concert.city || ''}</small></td>
+                    <td><strong>${concert.price || '0'} BYN</strong></td>
+                    <td>
+                        <span class="badge ${concert.availableTickets > 0 ? 'bg-success' : 'bg-danger'}">
+                            ${concert.availableTickets || 0}/${concert.totalTickets || 0}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <div class="concert-actions">
+                            <button class="btn btn-info btn-admin-sm" onclick="viewConcert(${concert.id})" title="Просмотр">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-admin-sm" onclick="showEditModal(${concert.id})" title="Редактировать">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-admin-sm" onclick="showDeleteModal(${concert.id})" title="Удалить">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = concertsTableHTML;
+    }
+
+    // Функция обновления статистики
+    function updateConcertStats() {
+        const totalConcerts = allConcerts.length;
+        const now = new Date();
+
+        const upcomingConcerts = allConcerts.filter(concert => {
+            const concertDate = new Date(concert.concertDateTime);
+            return concertDate > now;
+        }).length;
+
+        const totalTickets = allConcerts.reduce((sum, concert) => sum + (concert.totalTickets || 0), 0);
+        const totalRevenue = allConcerts.reduce((sum, concert) => {
+            const ticketsSold = (concert.totalTickets || 0) - (concert.availableTickets || 0);
+            return sum + ((concert.price || 0) * ticketsSold);
+        }, 0);
+
+        document.getElementById('totalConcerts').textContent = totalConcerts;
+        document.getElementById('upcomingConcerts').textContent = upcomingConcerts;
+        document.getElementById('totalTickets').textContent = totalTickets;
+        document.getElementById('totalRevenue').textContent = totalRevenue.toFixed(2);
+    }
+
+    // Функция поиска концертов
+    function searchConcerts() {
+        const searchTerm = document.getElementById('searchConcerts')?.value.toLowerCase() || '';
+
+        const filteredConcerts = allConcerts.filter(concert => {
+            const title = (concert.title || '').toLowerCase();
+            const artist = (concert.artist || '').toLowerCase();
+            const venue = (concert.venueName || '').toLowerCase();
+            const city = (concert.city || '').toLowerCase();
+
+            return title.includes(searchTerm) ||
+                artist.includes(searchTerm) ||
+                venue.includes(searchTerm) ||
+                city.includes(searchTerm);
+        });
+
+        const tbody = document.getElementById('concertsTableBody');
+        if (!tbody) return;
+
+        if (filteredConcerts.length === 0 && searchTerm) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="9" class="text-center py-4">
+                        <i class="bi bi-search display-4 text-muted mb-3"></i>
+                        <p>Концерты не найдены</p>
+                        <small class="text-muted">Попробуйте другой запрос</small>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        let concertsTableHTML = '';
+
+        (searchTerm ? filteredConcerts : allConcerts).forEach(concert => {
+            const concertDate = new Date(concert.concertDateTime);
+            const formattedDate = concertDate.toLocaleDateString('ru-RU');
+            const formattedTime = concertDate.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+            const imageUrl = concert.imageUrl || 'https://via.placeholder.com/60x60?text=No+Image';
+
+            concertsTableHTML += `
+                <tr>
+                    <td>${concert.id || 'N/A'}</td>
+                    <td><strong>${concert.title || 'Без названия'}</strong></td>
+                    <td><img src="${imageUrl}" class="image-preview" alt="${concert.title || 'Концерт'}"></td>
+                    <td>${concert.artist || 'Не указан'}</td>
+                    <td>${formattedDate}<br>${formattedTime}</td>
+                    <td>${concert.venueName || 'Не указано'}</td>
+                    <td><strong>${concert.price || '0'} BYN</strong></td>
+                    <td>
+                        <span class="badge ${concert.availableTickets > 0 ? 'bg-success' : 'bg-danger'}">
+                            ${concert.availableTickets || 0}/${concert.totalTickets || 0}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <div class="concert-actions">
+                            <button class="btn btn-info btn-admin-sm" onclick="viewConcert(${concert.id})">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-warning btn-admin-sm" onclick="showEditModal(${concert.id})">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-danger btn-admin-sm" onclick="showDeleteModal(${concert.id})">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        tbody.innerHTML = concertsTableHTML;
+    }
+
+    // Функция просмотра концерта
+    async function viewConcert(concertId) {
+        const concert = allConcerts.find(c => c.id === concertId);
+        if (!concert) {
+            showNotification('Концерт не найден', 'danger');
+            return;
+        }
+
+        // В реальном приложении можно открыть отдельную страницу
+        alert(`Просмотр концерта:\nID: ${concert.id}\nНазвание: ${concert.title}\nИсполнитель: ${concert.artist}\nДата: ${new Date(concert.concertDateTime).toLocaleString()}\nМесто: ${concert.venueName}, ${concert.city}\nЦена: ${concert.price} BYN\nБилеты: ${concert.availableTickets}/${concert.totalTickets}`);
+    }
+
+    // Функция показа модального окна добавления
+    function showAddModal() {
+        clearFormErrors('saveNewConcert');
+        document.getElementById('saveNewConcert').reset();
+
+        // Установка даты по умолчанию (завтра в 19:00)
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(19, 0, 0, 0);
+
+        const dateTimeString = tomorrow.toISOString().slice(0, 16);
+        document.getElementById('concertDateTimeNew').value = dateTimeString;
+
+        const modal = new bootstrap.Modal(document.getElementById('addConcertModal'));
+        modal.show();
+    }
+
+    // Функция показа модального окна редактирования
+    async function showEditModal(concertId) {
+        const concert = allConcerts.find(c => c.id === concertId);
+        if (!concert) {
+            showNotification('Концерт не найден', 'danger');
+            return;
+        }
+
+        clearFormErrors('formEditConcert');
+
+        // Заполнение формы данными концерта
+        document.getElementById('editConcertId').value = concert.id;
+        document.getElementById('editTitle').value = concert.title || '';
+        document.getElementById('editArtist').value = concert.artist || '';
+        document.getElementById('editDescription').value = concert.description || '';
+
+        // Форматирование даты для input datetime-local
+        const concertDate = new Date(concert.concertDateTime);
+        const timezoneOffset = concertDate.getTimezoneOffset() * 60000;
+        const localISOTime = new Date(concertDate - timezoneOffset).toISOString().slice(0, 16);
+        document.getElementById('editConcertDateTime').value = localISOTime;
+
+        document.getElementById('editPrice').value = concert.price || '';
+        document.getElementById('editVenueName').value = concert.venueName || '';
+        document.getElementById('editCity').value = concert.city || '';
+        document.getElementById('editVenueAddress').value = concert.venueAddress || '';
+        document.getElementById('editAvailableTickets').value = concert.availableTickets || '';
+        document.getElementById('editTotalTickets').value = concert.totalTickets || '';
+        document.getElementById('editImageUrl').value = concert.imageUrl || '';
+        document.getElementById('editAdditionalInfo').value = concert.additionalInfo || '';
+
+        const modal = new bootstrap.Modal(document.getElementById('editConcertModal'));
+        modal.show();
+    }
+
+    // Функция показа модального окна удаления
+    function showDeleteModal(concertId) {
+        const concert = allConcerts.find(c => c.id === concertId);
+        if (!concert) {
+            showNotification('Концерт не найден', 'danger');
+            return;
+        }
+
+        document.getElementById('deleteConcertId').value = concert.id;
+        document.getElementById('deleteTitle').value = concert.title || 'Без названия';
+        document.getElementById('deleteArtist').value = concert.artist || 'Не указан';
+
+        const concertDate = new Date(concert.concertDateTime);
+        document.getElementById('deleteConcertDateTime').value = concertDate.toLocaleString('ru-RU');
+
+        document.getElementById('deleteVenueName').value = `${concert.venueName || ''}${concert.city ? ', ' + concert.city : ''}`;
+
+        const modal = new bootstrap.Modal(document.getElementById('deleteConcertModal'));
+        modal.show();
+    }
+
+    // Функция очистки ошибок формы
+    function clearFormErrors(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+
+        const errorElements = form.querySelectorAll('.error-message');
+        errorElements.forEach(el => {
+            el.textContent = '';
+            el.style.display = 'none';
         });
     }
 
-    // Подсветка активной строки таблицы
-    document.addEventListener('DOMContentLoaded', function() {
-        const tableRows = document.querySelectorAll('.admin-table tbody tr');
-        tableRows.forEach(row => {
-            row.addEventListener('click', function() {
-                this.classList.toggle('table-active');
+    // Функция показа уведомлений
+    function showNotification(message, type = 'info') {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alert.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+        `;
+        alert.innerHTML = `
+            <strong>${type === 'success' ? '✅' : type === 'danger' ? '❌' : 'ℹ️'}</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+        document.body.appendChild(alert);
+
+        setTimeout(() => {
+            if (alert.parentNode) {
+                alert.remove();
+            }
+        }, 5000);
+    }
+
+    // Обработчики событий
+    document.addEventListener('DOMContentLoaded', async function() {
+        // Загрузка концертов при загрузке страницы
+        await loadConcerts();
+
+        // Поиск при вводе
+        const searchInput = document.getElementById('searchConcerts');
+        if (searchInput) {
+            searchInput.addEventListener('input', searchConcerts);
+        }
+
+        // Обработка формы добавления концерта
+        const addForm = document.getElementById('saveNewConcert');
+        if (addForm) {
+            addForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // Собираем данные формы
+                const concertData = {
+                    title: document.getElementById('titleNew').value.trim(),
+                    artist: document.getElementById('artistNew').value.trim(),
+                    description: document.getElementById('descriptionNew').value.trim(),
+                    concertDateTime: document.getElementById('concertDateTimeNew').value,
+                    price: parseFloat(document.getElementById('priceNew').value),
+                    venueName: document.getElementById('venueNameNew').value.trim(),
+                    city: document.getElementById('cityNew').value.trim(),
+                    venueAddress: document.getElementById('venueAddressNew').value.trim(),
+                    availableTickets: parseInt(document.getElementById('availableTicketsNew').value),
+                    totalTickets: parseInt(document.getElementById('totalTicketsNew').value),
+                    imageUrl: document.getElementById('imageUrlNew').value.trim() || null,
+                    additionalInfo: document.getElementById('additionalInfoNew').value.trim()
+                };
+
+                try {
+                    const response = await fetch('/api/admin/concerts/', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(concertData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw errorData;
+                    }
+
+                    showNotification('Концерт успешно добавлен', 'success');
+
+                    // Закрываем модальное окно
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addConcertModal'));
+                    modal.hide();
+
+                    // Очищаем форму
+                    addForm.reset();
+
+                    // Перезагружаем концерты
+                    await loadConcerts();
+
+                } catch (errorData) {
+                    // Отображаем ошибки валидации
+                    if (errorData.errors) {
+                        displayValidationErrors(errorData.errors, 'add');
+                    } else {
+                        showNotification('Ошибка добавления концерта', 'danger');
+                    }
+                }
             });
-        });
+        }
+
+        // Обработка формы редактирования концерта
+        const editForm = document.getElementById('formEditConcert');
+        if (editForm) {
+            editForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const concertId = document.getElementById('editConcertId').value;
+
+                const concertData = {
+                    id: concertId,
+                    title: document.getElementById('editTitle').value.trim(),
+                    artist: document.getElementById('editArtist').value.trim(),
+                    description: document.getElementById('editDescription').value.trim(),
+                    concertDateTime: document.getElementById('editConcertDateTime').value,
+                    price: parseFloat(document.getElementById('editPrice').value),
+                    venueName: document.getElementById('editVenueName').value.trim(),
+                    city: document.getElementById('editCity').value.trim(),
+                    venueAddress: document.getElementById('editVenueAddress').value.trim(),
+                    availableTickets: parseInt(document.getElementById('editAvailableTickets').value),
+                    totalTickets: parseInt(document.getElementById('editTotalTickets').value),
+                    imageUrl: document.getElementById('editImageUrl').value.trim() || null,
+                    additionalInfo: document.getElementById('editAdditionalInfo').value.trim()
+                };
+
+                try {
+                    const response = await fetch(`/api/admin/concerts/${concertId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(concertData)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw errorData;
+                    }
+
+                    showNotification('Концерт успешно обновлён', 'success');
+
+                    // Закрываем модальное окно
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('editConcertModal'));
+                    modal.hide();
+
+                    // Перезагружаем концерты
+                    await loadConcerts();
+
+                } catch (errorData) {
+                    if (errorData.errors) {
+                        displayValidationErrors(errorData.errors, 'edit');
+                    } else {
+                        showNotification('Ошибка обновления концерта', 'danger');
+                    }
+                }
+            });
+        }
+
+        // Обработка формы удаления концерта
+        const deleteForm = document.getElementById('formDeleteConcert');
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const concertId = document.getElementById('deleteConcertId').value;
+
+                try {
+                    const response = await fetch(`/api/admin/concerts/${concertId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        showNotification('Концерт успешно удалён', 'success');
+
+                        // Закрываем модальное окно
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteConcertModal'));
+                        modal.hide();
+
+                        // Перезагружаем концерты
+                        await loadConcerts();
+                    } else {
+                        const error = await response.json();
+                        showNotification(error.message || 'Ошибка удаления концерта', 'danger');
+                    }
+                } catch (error) {
+                    console.error('Ошибка:', error);
+                    showNotification('Ошибка соединения с сервером', 'danger');
+                }
+            });
+        }
     });
+
+    // Функция для отображения ошибок валидации
+    function displayValidationErrors(errors, formType) {
+        const prefix = formType === 'add' ? '' : 'edit';
+
+        Object.keys(errors).forEach(fieldName => {
+            const errorElement = document.getElementById(`${prefix}${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)}Error`);
+            if (errorElement) {
+                errorElement.textContent = errors[fieldName];
+                errorElement.style.display = 'block';
+            }
+        });
+    }
 </script>
 
 </body>

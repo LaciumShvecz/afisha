@@ -1,6 +1,7 @@
 package afisha.controllers;
 
 import afisha.models.Concert;
+import afisha.repositories.ConcertRepository;
 import afisha.services.ConcertService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,15 +12,18 @@ import org.springframework.web.servlet.ModelAndView;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class ConcertController {
 
     private final ConcertService concertService;
+    private final ConcertRepository concertRepository;
 
     @Autowired
-    public ConcertController(ConcertService concertService) {
+    public ConcertController(ConcertService concertService, ConcertRepository concertRepository) {
         this.concertService = concertService;
+        this.concertRepository = concertRepository;
     }
 
     // API методы (возвращают JSON)
@@ -177,5 +181,15 @@ public class ConcertController {
         if (dateTime == null) return "";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         return dateTime.format(formatter);
+    }
+
+    public List<Concert> getAllUpcomingConcerts() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Concert> upcomingConcerts = concertRepository.findByConcertDateTimeAfter(now);
+
+        // Сортируем по дате (от ближайших к дальним)
+        return upcomingConcerts.stream()
+                .sorted((c1, c2) -> c1.getConcertDateTime().compareTo(c2.getConcertDateTime()))
+                .collect(Collectors.toList());
     }
 }

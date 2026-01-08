@@ -44,4 +44,6 @@ public interface ConcertRepository extends JpaRepository<Concert, Long> {
 
     // Метод для поиска концертов по городу
     List<Concert> findByCityContainingIgnoreCase(String city);
+
+
 }

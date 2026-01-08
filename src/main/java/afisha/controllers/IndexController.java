@@ -18,6 +18,8 @@ public class IndexController {
     @GetMapping({"", "/", "/index"})
     public String homePage(Model model) {
         try {
+
+            List<Concert> upcomingConcerts = concertService.getUpcomingConcerts();
             // Получаем все концерты
             List<Concert> allConcerts = concertService.getAllConcerts();
 

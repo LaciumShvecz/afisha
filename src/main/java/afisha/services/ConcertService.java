@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ConcertService {
@@ -15,17 +16,10 @@ public class ConcertService {
     @Autowired
     private ConcertRepository concertRepository;
 
-    public List<Concert> getAllConcerts() {
-        return concertRepository.findAll();
-    }
-
     public Concert getConcertById(Long id) {
         return concertRepository.findById(id).orElse(null);
     }
 
-    public List<Concert> getUpcomingConcerts() {
-        return concertRepository.findByConcertDateTimeAfter(LocalDateTime.now());
-    }
 
     public List<Concert> getFeaturedConcerts() {
         return concertRepository.findByFeaturedTrue();
@@ -77,4 +71,32 @@ public class ConcertService {
         }
         return false;
     }
+
+    // Метод для получения 6 ближайших концертов
+    public List<Concert> getUpcomingConcerts() {
+        LocalDateTime now = LocalDateTime.now();
+
+        // Получаем все будущие концерты и сортируем по дате
+        List<Concert> upcomingConcerts = concertRepository.findByConcertDateTimeAfter(now);
+
+        // Сортируем по дате (от ближайших к дальним) и берем первые 6
+        return upcomingConcerts.stream()
+                .sorted((c1, c2) -> c1.getConcertDateTime().compareTo(c2.getConcertDateTime()))
+                .limit(6)
+                .collect(Collectors.toList());
+    }
+
+    // Метод для получения всех концертов
+    public List<Concert> getAllConcerts() {
+        return concertRepository.findAll();
+    }
+
+    // Метод для получения всех будущих концертов (для страницы расписания)
+    public List<Concert> getAllUpcomingConcerts() {
+        LocalDateTime now = LocalDateTime.now();
+        return concertRepository.findByConcertDateTimeAfter(now);
+    }
+
+
+
 }

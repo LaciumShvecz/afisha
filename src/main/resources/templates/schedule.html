@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Расписание концертов | AFISHA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Тема AFISHA -->
+    <link href="/scripts/style.css" rel="stylesheet">
+
+    <style>
+        .schedule-container {
+            min-height: 80vh;
+            padding: 2rem 0;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid var(--color-base-300);
+        }
+
+        .page-title {
+            color: var(--color-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .concert-card {
+            background: var(--color-base-200);
+            border: var(--border) solid var(--bs-border-color);
+            border-radius: var(--bs-border-radius);
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .concert-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .concert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .concert-card {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .concert-card > * {
+            flex-shrink: 0;
+        }
+
+        .concert-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .concert-image {
+            height: 180px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .concert-date-badge {
+            background: var(--color-primary);
+            color: var(--color-primary-content);
+            padding: 0.5rem 1rem;
+            border-radius: var(--bs-border-radius);
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .concert-title {
+            color: var(--color-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .concert-info {
+            color: var(--color-base-content);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .concert-info i {
+            color: var(--color-primary);
+            width: 1.25rem;
+        }
+
+        .concert-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--color-success);
+        }
+
+        .tickets-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-selector);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .tickets-available {
+            background: color-mix(in oklch, var(--color-success) 20%, transparent);
+            color: var(--color-success);
+        }
+
+        .tickets-sold-out {
+            background: color-mix(in oklch, var(--color-error) 20%, transparent);
+            color: var(--color-error);
+        }
+
+        .tickets-few {
+            background: color-mix(in oklch, var(--color-warning) 20%, transparent);
+            color: var(--color-warning);
+        }
+
+        .empty-schedule {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--color-base-content);
+            background: var(--color-base-200);
+            border-radius: var(--bs-border-radius);
+            border: 2px dashed var(--color-base-300);
+        }
+
+        .empty-schedule i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--color-base-300);
+        }
+
+        .back-to-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.2s ease;
+        }
+
+        .back-to-home:hover {
+            color: color-mix(in oklch, var(--color-primary) 80%, black);
+            text-decoration: underline;
+        }
+
+        /* Мобильная адаптация */
+        @media (max-width: 768px) {
+            .concert-image {
+                height: 150px;
+            }
+
+            .concert-info {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">AFISHA</a>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="ms-auto d-flex align-items-center gap-3">
+
+                <form class="d-flex">
+                    <input class="form-control search-input me-2" placeholder="Поиск">
+                    <button class="btn btn-outline-primary">Найти</button>
+                </form>
+
+                <a th:href="@{/login}"
+                   class="btn btn-outline-success"
+                   sec:authorize="!isAuthenticated()">Вход</a>
+
+                <div class="d-flex align-items-center gap-2"
+                     sec:authorize="isAuthenticated()">
+                    <div class="text-end">
+                        <div class="fw-semibold" sec:authentication="name"></div>
+                        <small sec:authorize="hasRole('ADMIN')" class="text-warning">Администратор</small>
+                        <small sec:authorize="!hasRole('ADMIN') and hasRole('USER')" class="text-secondary">Пользователь</small>
+                    </div>
+                    <form th:action="@{/logout}" method="post">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- РАСПИСАНИЕ -->
+<div class="container schedule-container">
+
+    <!-- Заголовок -->
+    <div class="page-header">
+        <h1 class="page-title">
+            <i class="bi bi-calendar-week me-2"></i>Расписание концертов
+        </h1>
+        <p class="text-primary">
+            Все предстоящие мероприятия. Всего:
+            <span class="fw-bold text-primary" th:text="${totalConcerts != null ? totalConcerts : 0}">0</span> концертов
+        </p>
+    </div>
+
+    <!-- Если нет концертов -->
+    <div th:if="${#lists.isEmpty(concerts)}" class="empty-schedule">
+        <i class="bi bi-calendar-x"></i>
+        <h4>Расписание пусто</h4>
+        <p class="text-muted mb-4">На данный момент нет запланированных мероприятий</p>
+        <a th:href="@{/}" class="btn btn-primary">Вернуться на главную</a>
+    </div>
+
+    <!-- Список концертов -->
+    <div class="row" th:if="${not #lists.isEmpty(concerts)}">
+        <div class="col-12">
+            <div class="row g-4">
+                <!-- Карточка концерта -->
+                <div class="col-md-6 col-lg-4" th:each="concert : ${concerts}">
+                    <div class="concert-card">
+                        <!-- Изображение -->
+                        <img th:src="${concert.imageUrl != null ? concert.imageUrl : 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'}"
+                             class="concert-image"
+                             th:alt="${concert.title}">
+
+                        <div class="p-3">
+                            <!-- Дата -->
+                            <div class="concert-date-badge">
+                                <i class="bi bi-calendar-event"></i>
+                                <span th:text="${#temporals.format(concert.concertDateTime, 'd MMM')}"></span>
+                            </div>
+
+                            <!-- Название -->
+                            <h3 class="concert-title" th:text="${concert.title}">
+                                Название концерта
+                            </h3>
+
+                            <!-- Исполнитель -->
+                            <p class="concert-info" th:if="${concert.artist != null}">
+                                <i class="bi bi-person"></i>
+                                <span th:text="${concert.artist}">Исполнитель</span>
+                            </p>
+
+                            <!-- Время -->
+                            <p class="concert-info">
+                                <i class="bi bi-clock"></i>
+                                <span th:text="${#temporals.format(concert.concertDateTime, 'HH:mm')}">19:00</span>
+                            </p>
+
+                            <!-- Место -->
+                            <p class="concert-info" th:if="${concert.venueName != null}">
+                                <i class="bi bi-geo-alt"></i>
+                                <span th:text="${concert.venueName} + (concert.city != null ? ', ' + concert.city : '')">
+                                    Место проведения
+                                </span>
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <!-- Цена -->
+                                <div class="concert-price" th:if="${concert.price != null}">
+                                    <span th:text="${#numbers.formatDecimal(concert.price, 1, 2)} + ' ' + ${concert.currency}">
+                                        50 BYN
+                                    </span>
+                                </div>
+
+                                <!-- Статус билетов -->
+                                <div th:if="${concert.availableTickets != null}">
+                                    <span th:if="${concert.availableTickets > 10}"
+                                          class="tickets-badge tickets-available">
+                                        <i class="bi bi-ticket-perforated"></i> Есть билеты
+                                    </span>
+                                    <span th:if="${concert.availableTickets > 0 and concert.availableTickets <= 10}"
+                                          class="tickets-badge tickets-few">
+                                        <i class="bi bi-exclamation-triangle"></i> Осталось:
+                                        <span th:text="${concert.availableTickets}"></span>
+                                    </span>
+                                    <span th:if="${concert.availableTickets == 0}"
+                                          class="tickets-badge tickets-sold-out">
+                                        <i class="bi bi-x-circle"></i> Нет билетов
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Кнопка Подробнее -->
+                            <div class="mt-3">
+                                <a th:href="@{'/concert/' + ${concert.id}}"
+                                   class="btn btn-primary w-100">
+                                    <i class="bi bi-eye me-2"></i>Подробнее
+                                </a>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Информация внизу -->
+    <div class="mt-5 pt-4 border-top text-center">
+        <p class="text-muted">
+            <i class="bi bi-info-circle me-2"></i>
+            Все даты и время указаны по местному времени. Цены могут изменяться.
+        </p>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="py-4 mt-5">
+    <div class="container text-center">
+        <div class="mb-2">
+            <a th:href="@{/}" class="me-3">Главная</a>
+            <a th:href="@{/schedule}" class="me-3">Расписание</a>
+            <a href="#" class="me-3">Контакты</a>
+            <a href="#" class="me-3">Помощь</a>
+            <span sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/admin-concerts}" class="me-3 text-warning">Админ-панель</a>
+            </span>
+        </div>
+        <small>© СП262 · Все события в одном месте</small>
+    </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Простой скрипт для плавного скролла наверх
+    document.querySelector('a[href="#"]').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+</script>
+
+</body>
+</html>

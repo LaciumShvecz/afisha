@@ -28,6 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/",
                         "/index",
+                        "/schedule",
                         "/concert/**",
                         "/ticket",
                         "/scripts/**",
